@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دليل التدريب — تحليل علمي للتمارين والعضلات المستهدفة</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E1117">
+<meta name="mobile-web-app-capable" content="yes">
+<!-- iOS home-screen support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="تماريني">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E1117;
+    --bg2:#141924;
+    --card:#171D2A;
+    --card2:#1C2333;
+    --line:#28303F;
+    --line2:#333D50;
+    --steel:#3E4759;
+    --steel-line:#4C566B;
+    --txt:#EAECF1;
+    --muted:#94A0B4;
+    --muted2:#6E7A8E;
+    --hot:#FF3B47;      /* primary muscle */
+    --hot-dim:#B42630;
+    --warm:#F6A23B;     /* secondary muscle */
+    --warm-dim:#8A5A1C;
+    --accent:#38BDF8;   /* structural accent */
+    --good:#34D399;
+    --neutral-fill:#232A38;
+    --neutral-line:#323B4C;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(255,59,71,.08), transparent 60%),
+      radial-gradient(900px 500px at 0% 0%, rgba(56,189,248,.06), transparent 55%),
+      var(--bg);
+    color:var(--txt);
+    font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;
+    line-height:1.7;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:18px 16px 60px}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    position:relative;
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:24px 22px;
+    background:
+      linear-gradient(135deg, rgba(255,59,71,.10), transparent 45%),
+      var(--card);
+    overflow:hidden;
+  }
+  header.hero::before{
+    content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,.02) 0 2px, transparent 2px 22px);
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:"IBM Plex Sans Arabic";
+    font-size:12.5px;font-weight:600;letter-spacing:.5px;
+    color:var(--hot);text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(255,59,71,.10);border:1px solid rgba(255,59,71,.28);
+    padding:5px 12px;border-radius:999px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--hot);box-shadow:0 0 10px var(--hot)}
+  h1{
+    font-family:"Cairo";font-weight:900;
+    font-size:clamp(26px,6vw,42px);line-height:1.15;
+    margin:14px 0 8px;letter-spacing:-.5px;
+  }
+  h1 .hl{color:var(--hot)}
+  .sub{color:var(--muted);max-width:640px;font-size:15px}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .stat{
+    background:var(--card2);border:1px solid var(--line);
+    border-radius:14px;padding:10px 14px;min-width:96px;
+  }
+  .stat b{font-family:"Cairo";font-weight:800;font-size:22px;display:block;line-height:1.1}
+  .stat span{font-size:12px;color:var(--muted2)}
+
+  /* ---------- Science banner ---------- */
+  .science-strip{
+    margin-top:14px;border:1px solid var(--line);border-radius:18px;
+    background:var(--bg2);padding:14px 16px;
+  }
+  .science-strip h3{margin:0 0 6px;font-family:"Cairo";font-size:15px;color:var(--accent);display:flex;align-items:center;gap:8px}
+  .science-strip p{margin:0;font-size:13.5px;color:var(--muted)}
+  .science-strip .src{color:var(--muted2);font-size:12px}
+
+  /* ---------- Day tabs ---------- */
+  .days{
+    display:flex;gap:8px;margin:22px 0 4px;overflow-x:auto;
+    padding-bottom:6px;scrollbar-width:thin;
+  }
+  .days::-webkit-scrollbar{height:5px}
+  .days::-webkit-scrollbar-thumb{background:var(--line2);border-radius:9px}
+  .day-tab{
+    flex:0 0 auto;border:1px solid var(--line);background:var(--card);
+    color:var(--muted);border-radius:14px;padding:11px 16px;cursor:pointer;
+    font-family:"Cairo";font-weight:700;font-size:14.5px;white-space:nowrap;
+    transition:.18s;display:flex;flex-direction:column;gap:1px;align-items:flex-start;
+  }
+  .day-tab small{font-weight:500;font-size:11px;color:var(--muted2);font-family:"IBM Plex Sans Arabic"}
+  .day-tab:hover{border-color:var(--line2);color:var(--txt)}
+  .day-tab.active{
+    background:linear-gradient(160deg, rgba(255,59,71,.16), var(--card2));
+    border-color:var(--hot);color:#fff;
+    box-shadow:0 0 0 1px rgba(255,59,71,.25), 0 10px 30px -12px rgba(255,59,71,.5);
+  }
+  .day-tab.active small{color:#ffd0d3}
+  .day-tab.cardio.active{
+    background:linear-gradient(160deg, rgba(56,189,248,.16), var(--card2));
+    border-color:var(--accent);box-shadow:0 0 0 1px rgba(56,189,248,.25),0 10px 30px -12px rgba(56,189,248,.5)
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+  @media(min-width:900px){.layout{grid-template-columns:330px 1fr;align-items:start}}
+
+  /* exercise list */
+  .list{display:flex;flex-direction:column;gap:8px}
+  .ex-btn{
+    text-align:right;border:1px solid var(--line);background:var(--card);
+    border-radius:14px;padding:12px 14px;cursor:pointer;transition:.16s;
+    display:flex;align-items:center;gap:12px;color:var(--txt);width:100%;
+  }
+  .ex-btn:hover{border-color:var(--line2);transform:translateX(-2px)}
+  .ex-btn.active{border-color:var(--hot);background:linear-gradient(200deg,rgba(255,59,71,.12),var(--card2))}
+  .ex-idx{
+    flex:0 0 auto;width:30px;height:30px;border-radius:9px;
+    display:grid;place-items:center;font-family:"IBM Plex Sans Arabic";font-weight:700;
+    background:var(--card2);border:1px solid var(--line);color:var(--muted);font-size:13px
+  }
+  .ex-btn.active .ex-idx{background:var(--hot);border-color:var(--hot);color:#fff}
+  .ex-meta{flex:1;min-width:0}
+  .ex-name{font-family:"Cairo";font-weight:700;font-size:14.5px;line-height:1.25;display:block}
+  .ex-en{font-size:11.5px;color:var(--muted2);direction:ltr;text-align:right;display:block;letter-spacing:.2px}
+  .ex-scheme{flex:0 0 auto;font-size:11px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);padding:3px 8px;border-radius:8px;white-space:nowrap;font-weight:600}
+
+  /* detail panel */
+  .detail{border:1px solid var(--line);border-radius:20px;background:var(--card);overflow:hidden}
+  .d-head{
+    padding:18px 20px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--card2),transparent);
+    display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between
+  }
+  .d-title h2{margin:0;font-family:"Cairo";font-weight:800;font-size:clamp(19px,4.5vw,26px);line-height:1.2}
+  .d-title .en{direction:ltr;color:var(--muted2);font-size:13px;font-weight:500;margin-top:2px}
+  .d-badges{display:flex;gap:7px;flex-wrap:wrap}
+  .badge{font-size:12px;font-weight:600;padding:6px 10px;border-radius:10px;background:var(--bg2);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+  .badge b{color:var(--txt);font-family:"IBM Plex Sans Arabic"}
+  .badge.hot{border-color:rgba(255,59,71,.35);color:#ffb9bd;background:rgba(255,59,71,.08)}
+
+  .d-body{padding:20px;display:grid;gap:22px}
+
+  /* muscle map */
+  .map-wrap{
+    background:
+      radial-gradient(400px 240px at 50% 8%, rgba(255,59,71,.08), transparent 70%),
+      var(--bg2);
+    border:1px solid var(--line);border-radius:18px;padding:16px 12px 10px
+  }
+  .map-figs{display:flex;justify-content:center;gap:8px;flex-wrap:nowrap}
+  .fig{flex:1 1 0;max-width:230px;text-align:center}
+  .fig svg{width:100%;height:auto;display:block}
+  .fig-cap{font-family:"Cairo";font-weight:700;font-size:12.5px;color:var(--muted);margin-top:2px}
+  .m{fill:var(--steel);stroke:var(--neutral-line);stroke-width:.8;transition:fill .35s ease, filter .35s ease}
+  .n{fill:var(--neutral-fill);stroke:var(--neutral-line);stroke-width:.8}
+  .m.primary{fill:var(--hot);filter:drop-shadow(0 0 5px rgba(255,59,71,.75))}
+  .m.secondary{fill:var(--warm);filter:drop-shadow(0 0 4px rgba(246,162,59,.55))}
+  .legend{display:flex;justify-content:center;gap:16px;margin-top:8px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-inline-start:6px;vertical-align:middle}
+
+  /* chips */
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:999px;border:1px solid;line-height:1.4}
+  .chip.p{color:#ffd4d7;border-color:rgba(255,59,71,.4);background:rgba(255,59,71,.10)}
+  .chip.s{color:#fde2bd;border-color:rgba(246,162,59,.4);background:rgba(246,162,59,.08)}
+
+  /* sections */
+  .sec h4{font-family:"Cairo";font-weight:800;font-size:15.5px;margin:0 0 10px;display:flex;align-items:center;gap:9px}
+  .sec h4 .ic{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:14px;background:var(--card2);border:1px solid var(--line)}
+  ul.clean{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  ul.clean li{position:relative;padding-inline-start:22px;font-size:14.2px;color:#d7dce4}
+  ul.clean li::before{content:"";position:absolute;inset-inline-start:4px;top:11px;width:7px;height:7px;border-radius:50%;background:var(--hot)}
+  ul.clean.form li::before{background:var(--accent);border-radius:2px}
+  .sci-box{
+    border:1px solid var(--line2);border-radius:14px;padding:13px 15px;
+    background:linear-gradient(180deg,rgba(56,189,248,.06),transparent);
+    font-size:13.6px;color:#cdd5e0
+  }
+  .sci-box .tag{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);background:rgba(56,189,248,.10);border:1px solid rgba(56,189,248,.3);padding:2px 9px;border-radius:7px;margin-bottom:7px;font-family:"Cairo"}
+  .sci-box .cite{display:block;margin-top:7px;color:var(--muted2);font-size:11.5px;direction:ltr;text-align:right}
+  .vid{
+    display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+    background:var(--hot);color:#fff;font-family:"Cairo";font-weight:700;font-size:14px;
+    padding:11px 18px;border-radius:12px;transition:.15s;box-shadow:0 10px 26px -12px rgba(255,59,71,.7)
+  }
+  .vid:hover{transform:translateY(-1px);filter:brightness(1.08)}
+  .vid svg{width:17px;height:17px}
+
+  /* cardio panel */
+  .cardio-panel{border:1px solid var(--line);border-radius:20px;background:var(--card);padding:22px}
+  .cardio-panel h2{font-family:"Cairo";font-weight:800;margin:0 0 6px;font-size:24px}
+  .cardio-grid{display:grid;gap:14px;margin-top:18px}
+  @media(min-width:640px){.cardio-grid{grid-template-columns:1fr 1fr}}
+  .cardio-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--bg2)}
+  .cardio-card h4{margin:0 0 8px;font-family:"Cairo";color:var(--accent);font-size:16px}
+
+  footer.note{margin-top:24px;border:1px solid var(--line);border-radius:16px;background:var(--bg2);padding:16px 18px;color:var(--muted);font-size:12.8px}
+  footer.note b{color:var(--txt)}
+  .empty{padding:40px 20px;text-align:center;color:var(--muted2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow"><span class="dot"></span> تحليل علمي للبرنامج التدريبي</span>
+    <h1>دليل تمارينك <span class="hl">مع خريطة العضلات</span> المستهدفة</h1>
+    <p class="sub">لكل تمرين في جدولك: العضلات التي يعمل عليها مضاءةً على الجسم (أمامي وخلفي)، فوائده المدعومة بأبحاث محكّمة، وأهم نقاط الأداء الصحيح. اختر اليوم ثم التمرين.</p>
+    <div class="stats">
+      <div class="stat"><b>5</b><span>أيام تدريب</span></div>
+      <div class="stat"><b>28</b><span>تمريناً</span></div>
+      <div class="stat"><b>4</b><span>جلسات مقاومة</span></div>
+      <div class="stat"><b>+20</b><span>مجموعة عضلية</span></div>
+    </div>
+    <div class="science-strip">
+      <h3>◆ لماذا تدريب المقاومة أصلاً؟</h3>
+      <p>تحليل تجميعي لـ 147 ألف مشارك على مدى 30 عاماً وجد أن نحو 90–120 دقيقة أسبوعياً من تدريب المقاومة ترتبط بانخفاض خطر الوفاة الكلية بنحو 13٪، والوفاة القلبية الوعائية بنحو 19٪، مستقلاً عن التمارين الهوائية. <span class="src">المصدر: American Journal of Preventive Medicine / Br J Sports Med (Shailendra et al.; Momma et al.)</span></p>
+    </div>
+  </header>
+
+  <nav class="days" id="days"></nav>
+
+  <div id="content" class="layout"></div>
+
+  <footer class="note">
+    <b>ملاحظة:</b> هذا الدليل تعليمي يلخّص ما توصّلت إليه أبحاث علوم الرياضة حول أنماط الحركة في جدولك، وليس بديلاً عن مدرّب مختص أو استشارة طبية عند وجود إصابة أو ألم. تنشيط العضلة عبر تخطيط كهربية العضل (EMG) لا يساوي بالضرورة نموّها؛ ما يهم للتضخيم هو الحِمل التدريجي والاقتراب من الفشل العضلي مع مدى حركة كامل.
+  </footer>
+</div>
+
+<script>
+/* ---------------- Muscle Arabic labels ---------------- */
+const M = {
+  chest:"الصدر", "front-delt":"الكتف الأمامي", "side-delt":"الكتف الجانبي", "rear-delt":"الكتف الخلفي",
+  biceps:"العضلة ذات الرأسين (الباي)", triceps:"ثلاثية الرؤوس (الترايسبس)", forearm:"الساعد",
+  abs:"عضلات البطن", obliques:"العضلات المائلة", lats:"الظهرية العريضة (اللاتس)", teres:"المدوّرة الكبيرة",
+  "traps-upper":"شبه المنحرفة العلوية", "traps-mid":"الوسطى والمعيّنية", "lower-back":"أسفل الظهر (الناصبة للفقار)",
+  glutes:"الألوية (المؤخرة)", quads:"رباعية الرؤوس (الفخذ الأمامي)", hamstrings:"أوتار الركبة (الفخذ الخلفي)",
+  adductors:"المقرّبة (باطن الفخذ)", abductors:"المبعّدة (الورك الخارجي)", calves:"السمانة (الساق)", tibialis:"الظنبوبية الأمامية"
+};
+
+/* ---------------- Data ---------------- */
+const DAYS = [
+  {key:"sat", name:"السبت", tag:"علوي 1 · Upper", type:"lift"},
+  {key:"sun", name:"الأحد", tag:"سفلي 1 · Lower", type:"lift"},
+  {key:"mon", name:"الاثنين", tag:"كارديو · Cardio", type:"cardio"},
+  {key:"tue", name:"الثلاثاء", tag:"علوي 2 · Upper", type:"lift"},
+  {key:"wed", name:"الأربعاء", tag:"سفلي 2 · Lower", type:"lift"},
+];
+
+const EX = {
+sat:[
+ {n:"ضغط الصدر بالجهاز",en:"Machine Chest Press",s:"4×8-10 · راحة 90ث",
+  p:["chest","front-delt","triceps"],x:["side-delt"],
+  b:["يبني كتلة الصدر بأمان عبر مسار حركة ثابت يسمح بتحميل ثقيل دون قلق التوازن، مناسب للتركيز على العضلة بدل تثبيت الوزن.","يشرك الكتف الأمامي وثلاثية الرؤوس كعضلات مساعدة فيطوّر قوة الدفع العامة.","الجهاز يقلّل الضغط على الكتف مقارنة بالبار الحر عند بعض الأشخاص لثبات المسار."],
+  f:["اضبط المقعد بحيث تكون المقابض بمستوى منتصف الصدر لا الرقبة.","حافظ على لصق الكتفين للخلف والأسفل وصدرٍ مرفوع طوال الحركة.","لا تُقفل المرفقين بعنف في النهاية، وتحكّم في مرحلة الرجوع (السلبية) ببطء."],
+  sci:{t:"مدى النموّ لا يتقيّد بنطاق تكرارات ضيّق",x:"عند الاقتراب من الفشل، يعطي نطاق 8–10 تكراراً نموّاً مماثلاً لنطاقات أعلى بكثير طالما تساوى الحِمل الكلي؛ اختر ما يتيح لك أداءً نظيفاً.",c:"Schoenfeld et al., J Strength Cond Res 2017"},
+  v:"https://youtube.com/shorts/2awX3rTGa1k"},
+
+ {n:"تفتيح الصدر بالكيبل",en:"Cable Fly",s:"4×10-12 · راحة 60ث",
+  p:["chest"],x:["front-delt"],
+  b:["يعزل الصدر عبر حركة تقريب الذراعين، ويحافظ على شدّ مستمر على العضلة في كامل المدى بفضل الكيبل.","ممتاز لاستهداف الألياف عند طولها الممتدّ (وضع الإطالة) وهو محفّز قويّ للتضخيم.","يكمّل تمارين الدفع بزاوية مختلفة تُحسّن اكتمال شكل الصدر."],
+  f:["انحناءة خفيفة ثابتة في المرفق طوال الحركة (لا تنثنِ ولا تُقفل).","ابدأ من إطالة مريحة وقرّب اليدين حتى يلتقيا أمام الصدر مع عصر العضلة.","الجذع ثابت؛ الحركة من مفصل الكتف فقط."],
+  sci:{t:"الشدّ في وضع الإطالة يحفّز النموّ",x:"تُظهر أدلة تضخيم الإطالة (stretch-mediated hypertrophy) أن التحميل عند طول العضلة الممتدّ محفّز فعّال للنموّ، وهو ما يميّز التفتيح بالكيبل.",c:"مبدأ مدعوم بأبحاث Maeo وآخرين حول طول العضلة"},
+  v:"https://youtube.com/shorts/CYviQI1Mnwg"},
+
+ {n:"سحب اللات بذراع مستقيمة (كيبل)",en:"Straight-Arm Cable Pulldown",s:"4×10-12 · راحة 60ث",
+  p:["lats"],x:["teres","triceps","abs"],
+  b:["يعزل العضلة الظهرية العريضة (اللاتس) عبر مدّ الكتف دون تدخّل كبير من الباي، فيعلّمك الإحساس بعمل الظهر.","يفعّل الرأس الطويل لثلاثية الرؤوس والجذع كمثبّت.","تمرين تسخين/تفعيل ممتاز قبل تمارين السحب الثقيلة."],
+  f:["ميل بسيط للأمام من الورك مع ظهر مستقيم.","اسحب البار للأسفل بذراعٍ مستقيمة حتى الفخذين مع عصر اللاتس.","التحكّم في الرجوع والشعور بإطالة اللاتس في الأعلى."],
+  sci:{t:"يستهدف مدّ الكتف بمعزل",x:"بخلاف السحب العمودي المركّب، تركّز هذه الحركة على وظيفة اللاتس في مدّ الكتف مع تقليل مساهمة ثنيات المرفق، ما يفيد الوعي العضلي.",c:"مبدأ حركي تشريحي (kinesiology)"},
+  v:"https://youtube.com/shorts/1_E77qhMpkE"},
+
+ {n:"سحب اللات قبضة واسعة",en:"Lat Pulldown (Wide Grip)",s:"4×8-10 · راحة 90ث",
+  p:["lats"],x:["biceps","rear-delt","traps-mid","teres"],
+  b:["أساس بناء عرض الظهر عبر تقريب/خفض الكتف تحت حمل ثابت.","يشرك الباي والكتف الخلفي والجزء الأوسط من الظهر كمساعدين.","بديل آمن ومتدرّج للعقلة (Pull-up) مع تحكّم دقيق بالوزن."],
+  f:["اسحب بالمرفقين نحو الأضلاع لا بالكفّين، مع صدرٍ مرفوع.","انزل بالبار لأعلى الصدر تقريباً مع عصر لوحي الكتف.","تجنّب الأرجحة الخلفية المبالغ بها للجذع."],
+  sci:{t:"عرض القبضة لا يغيّر تفعيل اللاتس كثيراً",x:"دراسات EMG (بينها دراسة 2025 على 40 متدرباً) لم تجد فروقاً جوهرية في تنشيط اللاتس بين القبضات المختلفة؛ القبضة الواسعة تزيد قليلاً عمل الكتف الخلفي/أعلى الظهر. المهم هو المدى الكامل والتحكم.",c:"Andersen et al. 2014; EMG study 2025 (PMC12452428)"},
+  v:"https://youtube.com/shorts/bNmvKpJSWKM"},
+
+ {n:"الرفرفة الجانبية بالكيبل",en:"Cable Lateral Raise",s:"3×12-15 · راحة 60ث",
+  p:["side-delt"],x:["traps-upper"],
+  b:["يستهدف الرأس الجانبي للكتف المسؤول عن عرض الكتفين ومظهر V.","الكيبل يوفّر شدّاً مستمراً حتى في أسفل الحركة حيث يخفّ حمل الدمبل.","يحسّن ثبات ووظيفة مفصل الكتف."],
+  f:["ارفع للجانب حتى مستوى الكتف تقريباً، لا أعلى.","قُد الحركة بالكوع/الكتف لا بالمعصم، مع ميل إبهام خفيف للأسفل.","تحكّم في النزول ولا تستخدم الزخم."],
+  sci:{t:"الكيبل والدمبل متكافئان للنموّ",x:"تجربة 2025 (8 أسابيع) على متدربين وجدت زيادة متماثلة في سماكة الكتف الجانبي بين الرفرفة بالكيبل والدمبل عند مساواة المدى والوصول للفشل.",c:"Larsen, Wolf, Schoenfeld et al., Front. Physiol. 2025"},
+  v:"https://youtube.com/shorts/9ilIKuy6B0g"},
+
+ {n:"ضغط الكتف بالجهاز",en:"Machine Shoulder Press",s:"3×10-12 · راحة 90ث",
+  p:["front-delt","side-delt"],x:["triceps","traps-upper"],
+  b:["يبني حجم وقوة الكتف مع مسار مستقر يسمح بالتركيز على الدفع العلوي.","يشرك ثلاثية الرؤوس وأعلى الظهر كمساعدين لقوة دفع شاملة.","أأمن من البار فوق الرأس لأصحاب حساسية الكتف."],
+  f:["اضبط الارتفاع بحيث تبدأ المقابض قرب مستوى الأذن.","ادفع لأعلى دون قفل عنيف، وحافظ على أسفل ظهر ملامس للمسند.","لا تُبالغ في تقويس الظهر أثناء الدفع."],
+  sci:{t:"الرفرفة تسبق الضغط لعزل الكتف الجانبي",x:"يعطي الضغط فوق الرأس تنشيطاً أعلى للكتف الأمامي، بينما الرفرفة الجانبية تنشّط الكتف الجانبي أكثر؛ لذا وجودهما معاً في اليوم منطقي.",c:"مبدأ مدعوم بمقارنات sEMG للكتف"},
+  v:"https://youtube.com/shorts/6v4nrRVySj0"},
+
+ {n:"دفع الترايسبس بالحبل",en:"Tricep Rope Pushdown",s:"3×12-15 · راحة 60ث",
+  p:["triceps"],x:["forearm"],
+  b:["يعزل ثلاثية الرؤوس (خاصة الرأسين الجانبي والأوسط) لتفصيل مؤخرة الذراع.","الحبل يتيح فتح اليدين في النهاية لعصرٍ أقوى للعضلة.","سهل التحميل التدريجي وآمن على المرفق."],
+  f:["ثبّت المرفقين بجانب الجذع طوال الحركة.","افتح الحبل وادفع لأسفل حتى مدّ المرفق الكامل مع عصر خفيف.","تحكّم في الرجوع ولا ترفع المرفقين."],
+  sci:{t:"الدفع يبني الرأسين المفصليّين",x:"يميل الدفع لأسفل (مرفق بجانب الجذع) لبناء الرأس الجانبي والأوسط أكثر، بينما تمارين فوق الرأس تخدم الرأس الطويل — لذا يُنصح بالجمع بينهما.",c:"Maeo et al., Eur J Sport Sci 2023"},
+  v:"https://youtube.com/shorts/1FjkhpZsaxc"},
+
+ {n:"مرجحة الباي ببار مستقيم (كيبل)",en:"Cable Straight-Bar Curl",s:"3×12-15 · راحة 60ث",
+  p:["biceps"],x:["forearm"],
+  b:["يبني العضلة ذات الرأسين مع شدّ مستمر من الكيبل يمنع نقاط الراحة.","القبضة السفلية تضع الباي في وضع مثالي للانقباض.","يقوّي قبضة اليد والساعد كمساعد."],
+  f:["ثبّت المرفقين قرب الجذع ولا تدفعهما للأمام.","ارفع البار بعصر الباي، لا بأرجحة الجذع.","انزل ببطء مع إطالة كاملة أسفل الحركة."],
+  sci:{t:"الشدّ المستمر ميزة الكيبل",x:"يحافظ الكيبل على توتر ثابت في كامل المدى بعكس الأوزان الحرة التي يخفّ حملها عند القمة، ما قد يزيد إجمالي الجهد الميكانيكي.",c:"مبدأ حِمل ميكانيكي مستمر"},
+  v:"https://youtube.com/shorts/CrbTqNOlFgE"},
+],
+
+sun:[
+ {n:"سكوات الهاك (الجهاز)",en:"Hack Squat Machine",s:"4×10-12 · راحة 90ث",
+  p:["quads","glutes"],x:["adductors","hamstrings"],
+  b:["يحمّل الفخذ الأمامي بكثافة مع مسار ثابت يقلّل الحمل على أسفل الظهر مقارنة بالسكوات الحر.","يسمح بنزول عميق آمن يزيد مدى الحركة والنموّ.","يشرك المؤخرة والمقرّبات كمساعدين."],
+  f:["قدمان بعرض الكتفين، والظهر ملامس للمسند بالكامل.","انزل حتى فخذ موازٍ أو أعمق مع دفع الركبتين للخارج قليلاً.","ادفع من منتصف/كعب القدم، ولا تُقفل الركبة بعنف."],
+  sci:{t:"العمق يزيد نموّ الفخذ",x:"مدى الحركة الكامل (سكوات عميق) يميل لإعطاء تضخيم أكبر للفخذ الأمامي مقارنة بالمدى الجزئي، والجهاز يسهّل الوصول لعمق آمن.",c:"أبحاث مدى الحركة والتضخيم (ROM)"},
+  v:"https://youtube.com/shorts/jnSxbzjxX5c"},
+
+ {n:"دفع الأرجل (Leg Press)",en:"Leg Press",s:"4×10-12 · راحة 90ث",
+  p:["quads","glutes"],x:["hamstrings","adductors"],
+  b:["يتيح تحميل حجم كبير على الأرجل بأمان دون تحميل العمود الفقري.","تغيير وضع القدم يحوّل التركيز بين الفخذ الأمامي والمؤخرة.","ممتاز لبناء القوة والحجم مع سهولة التحكم."],
+  f:["قدمان منتصف المنصّة؛ أعلى = مؤخرة/خلفي أكثر، أسفل = أمامي أكثر.","انزل حتى ٩٠ درجة أو أعمق دون رفع أسفل الظهر عن المسند.","لا تُقفل الركبتين قفلاً كاملاً في الأعلى."],
+  sci:{t:"بديل فعّال منخفض حمل العمود",x:"يعطي دفع الأرجل تنشيطاً عالياً لرباعية الرؤوس مع حمل ضغطي أقل على الفقرات، ما يجعله خياراً ذكياً لزيادة الحجم بأمان.",c:"مبادئ الميكانيكا الحيوية للأرجل"},
+  v:"https://youtube.com/shorts/EotSw18oR9w"},
+
+ {n:"تمديد الأرجل",en:"Leg Extension",s:"3×12-15 · راحة 60ث",
+  p:["quads"],x:[],
+  b:["أفضل عزل مباشر لرباعية الرؤوس، خاصة الرأس المستقيم (rectus femoris).","يسمح بتحفيز الفخذ الأمامي دون إشراك المؤخرة أو الظهر.","مفيد لإنهاك العضلة بعد المركّبات."],
+  f:["حاذِ محور الجهاز مع مفصل الركبة.","مدّ الركبة بالكامل مع عصر أعلى الحركة لثانية.","تحكّم في النزول ولا تدع الوزن يسقط."],
+  sci:{t:"عزل نقيّ للفخذ الأمامي",x:"تمرين أحادي المفصل يركّز الحمل على رباعية الرؤوس، ويُظهر مدى الحركة الكامل مع التركيز على الجزء الممتدّ فائدة أكبر للنموّ.",c:"أدلة التضخيم عند الطول الممتدّ"},
+  v:"https://youtube.com/shorts/iQ92TuvBqRo"},
+
+ {n:"ثني الأرجل (منبطح)",en:"Lying Leg Curl",s:"4×10-12 · راحة 90ث",
+  p:["hamstrings"],x:["calves"],
+  b:["يعزل أوتار الركبة عبر ثني الركبة، مكمّلاً لتمارين مدّ الورك (مثل الرومانية).","يقوّي الجزء المسؤول عن ثني الركبة ويحمي من إصابات الفخذ الخلفي.","يساهم في توازن قوة الفخذ الأمامي/الخلفي."],
+  f:["حاذِ الركبة مع محور الجهاز والوسادة أسفل ربلة الساق.","اثنِ بالكامل مع عصر أوتار الركبة وتجنّب رفع الورك.","نزول بطيء متحكّم به."],
+  sci:{t:"يستهدف الرأس القصير لعضلة الفخذ ذات الرأسين",x:"تمارين ثني الركبة تفعّل الرأس القصير للعضلة ذات الرأسين الفخذية بشكل أكبر، بينما الرومانية تركّز على العضلة نصف الوترية — فالجمع بينهما يبني الفخذ الخلفي كاملاً.",c:"Schoenfeld et al. 2015; McAllister et al. 2014"},
+  v:"https://youtu.be/Gbw6hOeJkFA"},
+
+ {n:"السحب بين الرجلين (كيبل)",en:"Cable Pull Through",s:"3×12-15 · راحة 60ث",
+  p:["glutes","hamstrings"],x:["lower-back"],
+  b:["يعلّم نمط مفصلة الورك (hip hinge) الصحيح ويبني المؤخرة بأمان.","حمل أفقي من الكيبل يخفّف الضغط على أسفل الظهر مقارنة بالرفعات الثقيلة.","تمرين ممتاز للربط العصبي-العضلي مع المؤخرة."],
+  f:["مفصلة من الورك للخلف مع ركبتين شبه ثابتتين وظهر محايد.","ادفع الورك للأمام وعصر المؤخرة بقوة في النهاية.","لا تحوّلها لسكوات؛ الحركة من الورك."],
+  sci:{t:"مدّ الورك = تفعيل عالٍ للألوية",x:"حركات مدّ الورك (كالسحب والرومانية) تُظهر تنشيطاً قوياً للمؤخرة وأوتار الركبة مع حمل منخفض على الناصبة للفقار نسبياً.",c:"مراجعة EMG للرفعة المميتة ومشتقاتها، PLOS One 2020"},
+  v:"https://youtube.com/shorts/NAPMNd9RRxM"},
+
+ {n:"رفع السمانة جالساً (جهاز)",en:"Seated Calf Raise Machine",s:"4×15-20 · راحة 60ث",
+  p:["calves"],x:[],
+  b:["يستهدف العضلة النعلية (soleus) العميقة بفضل ثني الركبة ٩٠ درجة.","يكمّل الرفع واقفاً لبناء سُمك السمانة من جميع الزوايا.","يسمح بحمل ثقيل مع تكرارات عالية."],
+  f:["الوسادة على أسفل الفخذ وكرة القدم على الحافة.","انزل بالكعب لإطالة كاملة ثم ارتفع لأقصى مدى مع توقف قصير.","تكرارات بطيئة ومتحكّم بها لتجنّب الزخم."],
+  sci:{t:"الجلوس يعزل النعلية",x:"مع ثني الركبة تدخل عضلة الساق التوأمية في «القصور النشط» فتقلّ مساهمتها، وتصبح النعلية المحرّك الأساسي — لذا الرفع جالساً هو تمرين النعلية بامتياز.",c:"Kinoshita/Maeo et al. 2023 (PMID 38156065)"},
+  v:"https://youtube.com/shorts/S2yhz3klwdU"},
+],
+
+tue:[
+ {n:"الضغط المائل بالجهاز",en:"Incline Machine Press",s:"4×8-10 · راحة 90ث",
+  p:["chest","front-delt","triceps"],x:["side-delt"],
+  b:["يركّز على الجزء العلوي من الصدر (القصّي-الترقوي) لاكتمال شكل الصدر.","الزاوية المائلة تزيد مساهمة الكتف الأمامي في الدفع.","مسار الجهاز يسمح بتحميل آمن مع تركيز أعلى."],
+  f:["اضبط الزاوية بين ١٥–٣٠ درجة (زيادة الميل تحوّل الحمل للكتف).","المقابض بمستوى أعلى الصدر، والكتفان مسحوبان للخلف.","تحكّم بالسلبية ولا تُقفل المرفق بعنف."],
+  sci:{t:"الميل يستهدف الألياف العلوية",x:"تُظهر مقارنات sEMG أن الضغط المائل يرفع تنشيط الجزء العلوي من الصدر مقارنة بالضغط المستوي، فيكمّل تمارين الصدر الأخرى.",c:"أبحاث زوايا الضغط وتفعيل الصدر"},
+  v:"https://youtube.com/shorts/tOjHAnMAGXc"},
+
+ {n:"تفتيح الصدر (بيك ديك)",en:"Pec Deck Machine Fly",s:"3×12-15 · راحة 60ث",
+  p:["chest"],x:["front-delt"],
+  b:["يعزل الصدر عبر التقريب مع مسار مستقر يسهّل الإحساس بالعضلة.","ممتاز كتمرين إنهاك بعد الضغط المركّب.","حمل ثابت وآمن على الكتف مع تحكّم عالٍ."],
+  f:["اضبط الذراعين بحيث يكون الصدر ممتدّاً في البداية دون ألم بالكتف.","قرّب الوسادتين/المقبضين بعصر الصدر، وتوقّف لحظة في المنتصف.","ارجع ببطء مع الشعور بالإطالة."],
+  sci:{t:"عزل بمسار ثابت",x:"يوفّر البيك ديك تقريباً منضبطاً للصدر مع تقليل تدخّل المثبّتات، ما يجعله مناسباً لزيادة حجم التدريب على الصدر بأمان.",c:"مبدأ العزل أحادي المفصل"},
+  v:"https://youtube.com/shorts/fEdkcOlW8EA"},
+
+ {n:"تجديف تي-بار",en:"T-Bar Row",s:"4×10-12 · راحة 60ث",
+  p:["lats","traps-mid"],x:["biceps","rear-delt","lower-back"],
+  b:["يبني سُمك الظهر (الجزء الأوسط، المعيّنية، شبه المنحرفة) عبر السحب الأفقي.","يحمّل اللاتس والكتف الخلفي والباي معاً لقوة سحب شاملة.","القبضة المحايدة غالباً أرحم على الكتف."],
+  f:["مفصلة من الورك مع ظهر محايد مشدود وصدرٍ مرفوع.","اسحب نحو أسفل الصدر/البطن مع عصر لوحي الكتف.","تجنّب تدوير الظهر أو استخدام الزخم المفرط."],
+  sci:{t:"سُمك الظهر عبر التجديف الأفقي",x:"حركات التجديف تنشّط الجزء الأوسط من شبه المنحرفة والمعيّنية أكثر من السحب العمودي، فوجود سحب أفقي وعمودي في برنامجك يبني الظهر بكامل أبعاده.",c:"مبادئ EMG لأنماط السحب"},
+  v:"https://youtube.com/shorts/0pGiyBXvA2c"},
+
+ {n:"سحب اللات قبضة عكسية",en:"Reverse-Grip Lat Pulldown",s:"4×8-10 · راحة 90ث",
+  p:["lats"],x:["biceps","rear-delt"],
+  b:["القبضة السفلية تقرّب المرفقين للجذع فتزيد إحساس أسفل اللاتس ومساهمة الباي.","زاوية مختلفة تكمّل السحب الواسع لتطوير الظهر.","مريحة للكتف عند كثيرين."],
+  f:["قبضة أسفل بعرض الكتفين، والمرفقان يتحرّكان بمحاذاة الجذع.","اسحب لأعلى الصدر مع عصر الظهر لا شدّ الباي فقط.","تحكّم في الرجوع مع إطالة كاملة."],
+  sci:{t:"القبضة السفلية تزيد ثني المرفق",x:"القبضة المستلقية (supinated) تميل لرفع مشاركة الباي في السحب العمودي مقارنة بالقبضة المنكبّة، مع بقاء اللاتس المحرّك الأساسي.",c:"Lusk et al.; مراجعات EMG لسحب اللات"},
+  v:"https://youtube.com/shorts/OQB5KPWWEmo"},
+
+ {n:"الرفرفة الجانبية بالدمبل",en:"DB Lateral Raise",s:"3×12-15 · راحة 60ث",
+  p:["side-delt"],x:["traps-upper"],
+  b:["حجر الأساس لعرض الكتف عبر عزل الرأس الجانبي.","يطوّر ثبات الكتف والتحكّم الحركي.","سهل الإدماج بحمل خفيف-متوسط وتكرارات عالية."],
+  f:["ارفع للجانب حتى مستوى الكتف مع مرفق أعلى قليلاً من المعصم.","لا زخم من الجذع؛ الحركة نظيفة ومتحكّم بها.","نزول بطيء للحفاظ على الشدّ."],
+  sci:{t:"مكافئ للكيبل في النموّ",x:"وجدت تجربة 2025 نموّاً متماثلاً للكتف الجانبي بين الدمبل والكيبل عند المساواة؛ فالاختيار يعود لراحتك وتوفّر الأداة.",c:"Larsen et al., Front. Physiol. 2025"},
+  v:"https://youtube.com/shorts/xyK8UiC-BUw"},
+
+ {n:"السحب العمودي بالكيبل (Upright Row)",en:"Cable Upright Row",s:"3×12-15 · راحة 60ث",
+  p:["side-delt","traps-upper"],x:["biceps"],
+  b:["يجمع بين الكتف الجانبي وأعلى شبه المنحرفة في حركة واحدة.","يبني «قمّة» الكتف وربط الرقبة بالكتف.","الكيبل يحافظ على شدّ ثابت."],
+  f:["اسحب لأعلى بقيادة المرفقين، وتوقّف عند مستوى الصدر تقريباً (لا أعلى من الكتف).","قبضة بعرض الكتفين لتقليل ضغط الكتف الداخلي.","إن شعرت بألم بالكتف، قلّل الارتفاع أو وسّع القبضة."],
+  sci:{t:"احذر المدى العالي جداً",x:"الرفع فوق مستوى الكتف مع قبضة ضيّقة قد يزيد خطر انحشار الكتف (impingement)؛ إيقاف الحركة عند مستوى الصدر أأمن مع الحفاظ على تنشيط الكتف الجانبي.",c:"إرشادات سلامة مفصل الكتف"},
+  v:"https://youtube.com/shorts/MVDNQt5NgKI"},
+
+ {n:"تمديد الترايسبس فوق الرأس (كيبل)",en:"Overhead Cable Tricep Extension",s:"3×12-15 · راحة 60ث",
+  p:["triceps"],x:[],
+  b:["يضع الرأس الطويل لثلاثية الرؤوس في وضع إطالة قصوى فوق الرأس — الأقوى لنموّ هذا الرأس.","يكمّل الدفع لأسفل الذي يقصّر الرأس الطويل.","الكيبل يوفّر شدّاً ثابتاً في وضع الإطالة."],
+  f:["ذراعان فوق/خلف الرأس مع تثبيت المرفقين قدر الإمكان.","مدّ المرفق بالكامل ثم انزل ببطء للإطالة العميقة.","الجذع ثابت دون تقويس مفرط لأسفل الظهر."],
+  sci:{t:"تفوّق واضح على الدفع لأسفل للرأس الطويل",x:"في دراسة استمرّت ١٢ أسبوعاً، أعطى التمديد فوق الرأس نموّاً للرأس الطويل أكبر بنحو ١٫٥ ضعف مقارنة بالدفع لأسفل (+28.5٪ مقابل +19.6٪)، بسبب التحميل عند طول العضلة الممتدّ.",c:"Maeo et al., Eur J Sport Sci 2023 (DOI 10.1080/17461391.2022.2100279)"},
+  v:"https://youtube.com/shorts/9Ark9S11uXw"},
+
+ {n:"مرجحة المطرقة بالحبل (كيبل)",en:"Cable Hammer Curl (Rope)",s:"3×12-15 · راحة 60ث",
+  p:["biceps","forearm"],x:[],
+  b:["القبضة المحايدة تشرك العضلة العضدية (brachialis) والعضدية الكعبرية (brachioradialis) فتزيد سُمك الذراع.","تبني قوة قبضة وساعد ممتازة.","الكيبل يحافظ على توتر ثابت طوال المدى."],
+  f:["قبضة محايدة (الإبهامان للأعلى) والمرفقان ثابتان بجانب الجذع.","ارفع بعصر دون أرجحة، وانزل ببطء.","لا تدوّر المعصم؛ حافظ على الوضع المحايد."],
+  sci:{t:"يبني ما «تحت» الباي",x:"الوضع المحايد يزيد مشاركة العضدية الواقعة تحت الباي، ما يدفع الرأسين للأعلى بصرياً ويضيف سُمكاً للذراع.",c:"تشريح ثنيات المرفق ووظيفتها"},
+  v:"https://youtube.com/shorts/FNIIiNSZ78k"},
+],
+
+wed:[
+ {n:"الرفعة الرومانية",en:"Romanian Deadlift",s:"4×10-12 · راحة 90ث",
+  p:["hamstrings","glutes"],x:["lower-back","forearm","traps-upper"],
+  b:["من أفضل حركات مدّ الورك لبناء أوتار الركبة والمؤخرة عبر الإطالة تحت حمل.","يقوّي السلسلة الخلفية كاملة ويحسّن الوقوف والأداء الرياضي.","يعزّز قوة القبضة والظهر كمثبّتات."],
+  f:["مفصلة من الورك للخلف مع ركبتين شبه ثابتتين وظهر محايد مشدود.","أبقِ البار/الأوزان قريبة من الساقين وانزل حتى تشعر بإطالة أوتار الركبة.","ادفع الورك للأمام وعصر المؤخرة للوقوف — لا تقوّس الظهر."],
+  sci:{t:"يبرز العضلة نصف الوترية",x:"تُظهر الأبحاث أن الرومانية تنشّط أوتار الركبة بقوة مع تفضيل العضلة نصف الوترية على ذات الرأسين، وحمل أقل على الناصبة للفقار مقارنة بالرفعة التقليدية.",c:"McAllister et al. 2014; مراجعة PLOS One 2020"},
+  v:"https://youtube.com/shorts/5rIqP63yWFg"},
+
+ {n:"تمديد رجل واحدة",en:"Single-Leg Leg Extension",s:"3×12-15 لكل جهة · راحة 60ث",
+  p:["quads"],x:[],
+  b:["يعالج فروق القوة بين الرجلين (عدم التماثل) عبر العمل الأحادي.","تركيز أعلى على رباعية الرؤوس لكل رجل على حدة.","يحسّن الربط العصبي-العضلي والتحكّم."],
+  f:["حاذِ الركبة مع محور الجهاز، وثبّت الحوض.","مدّ الركبة بالكامل مع عصر، وتحكّم بالنزول.","ابدأ بالرجل الأضعف وطابِق التكرارات."],
+  sci:{t:"يقلّص عدم التماثل",x:"العمل الأحادي يمنع الرجل المهيمنة من التعويض، فيوزّع المنبّه بالتساوي ويعالج فروق النموّ والقوة بين الجانبين.",c:"مبادئ التدريب الأحادي"},
+  v:"https://youtube.com/shorts/00oU4iadGsY"},
+
+ {n:"سكوات البندول (الجهاز)",en:"Pendulum Squat Machine",s:"4×10-12 · راحة 90ث",
+  p:["quads","glutes"],x:["adductors","hamstrings"],
+  b:["مسار قوسي يوزّع الحمل على الفخذ بسلاسة ويقلّل الضغط على الركبة/الظهر.","يتيح نزولاً عميقاً آمناً لتحفيز أقصى للفخذ الأمامي.","ثبات ممتاز يسمح بالتركيز على العضلة حتى الفشل."],
+  f:["قدمان بعرض مريح والظهر ملامس للمسند.","انزل بعمق مع دفع الركبتين للخارج قليلاً.","ادفع بثبات دون قفل عنيف للركبة."],
+  sci:{t:"عمق آمن = نموّ أكبر",x:"مثل الهاك، يسهّل البندول مدى حركة كاملاً بأمان، وهو ما ترتبط به زيادة أكبر في تضخيم الفخذ مقارنة بالمدى الجزئي.",c:"أبحاث مدى الحركة والتضخيم"},
+  v:"https://youtube.com/shorts/yyWZwaokuCo"},
+
+ {n:"ثني الأرجل جالساً",en:"Seated Leg Curl",s:"4×10-12 · راحة 90ث",
+  p:["hamstrings"],x:["calves"],
+  b:["يضع أوتار الركبة في وضع إطالة أكبر (الورك مثنيّ) — محفّز قويّ للنموّ.","تُظهر أبحاث أنه قد يتفوّق على الثني منبطحاً في تضخيم أوتار الركبة.","يعزل الفخذ الخلفي عبر ثني الركبة بأمان."],
+  f:["حاذِ الركبة مع محور الجهاز وثبّت وسادة الفخذ.","اثنِ بالكامل تحت الجسم مع عصر، وارجع ببطء.","لا ترفع الورك عن المقعد أثناء الثني."],
+  sci:{t:"وضع الإطالة يمنح أفضلية",x:"لأن الورك مثنيّ، تكون أوتار الركبة أكثر إطالة في الثني جالساً، وتشير دراسات حديثة إلى تضخيم أكبر مقارنة بالثني منبطحاً — فالجمع بينهما مثالي.",c:"أدلة تضخيم الإطالة لأوتار الركبة"},
+  v:"https://youtube.com/shorts/_lgE0gPvbik"},
+
+ {n:"رفع السمانة واقفاً (جهاز)",en:"Standing Calf Raise Machine",s:"4×15-20 · راحة 60ث",
+  p:["calves"],x:[],
+  b:["الرِجل ممدودة فتعمل العضلة التوأمية (gastrocnemius) بكامل طاقتها لبناء حجم السمانة الظاهر.","يبني القوة الانفجارية للقفز والجري.","يكمّل الرفع جالساً لتغطية النعلية والتوأمية معاً."],
+  f:["كرة القدم على الحافة والكعبان يتدلّيان لإطالة كاملة.","ارتفع لأقصى مدى مع توقّف قصير في القمة.","تكرارات كاملة بطيئة دون ارتداد."],
+  sci:{t:"أفضل للتوأمية من الجلوس",x:"تجربة ١٢ أسبوعاً (٢٠٢٣) وجدت نموّاً أكبر بوضوح للعضلة التوأمية في الرفع واقفاً مقارنة بجالساً (مثلاً +9.2٪ مقابل +0.6٪ للرأس الإنسي)، بينما تنمو النعلية بالمثل في الوضعين.",c:"Kinoshita/Maeo et al. 2023 (PMID 38156065)"},
+  v:"https://youtube.com/shorts/Fm_smc6asMk"},
+
+ {n:"جهاز إبعاد الورك",en:"Hip Abductor Machine",s:"3×15-20 · راحة 60ث",
+  p:["abductors","glutes"],x:[],
+  b:["يستهدف الألوية المتوسطة والصغرى المسؤولة عن ثبات الحوض وشكل الورك الجانبي.","يقوّي مثبّتات الورك فيقلّل خطر إصابات الركبة وأسفل الظهر.","يحسّن ثبات المشي والوقوف على رجل واحدة."],
+  f:["اجلس بظهر مستقيم وادفع الوسادتين للخارج بتحكّم.","ميل بسيط للأمام قد يزيد إحساس الألوية العليا.","توقّف لحظة في أقصى إبعاد وارجع ببطء."],
+  sci:{t:"يقوّي مثبّتات الحوض",x:"الألوية المتوسطة/الصغرى أساسية لمنع «انهيار» الركبة للداخل (valgus)؛ تقويتها يرتبط بتقليل خطر إصابات الطرف السفلي.",c:"أدلة استقرار الحوض والوقاية من الإصابة"},
+  v:"https://youtube.com/shorts/BmMmt-c9aNM"},
+],
+};
+
+/* ---------------- SVG bodies ---------------- */
+/* Front view */
+const FRONT = `
+<svg viewBox="0 0 220 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="منظر أمامي">
+  <!-- neutral base -->
+  <ellipse class="n" cx="110" cy="30" rx="19" ry="22"/>
+  <path class="n" d="M98 50 h24 v14 q-12 6 -24 0 z"/>
+  <!-- hips/pelvis -->
+  <path class="n" d="M80 172 q30 18 60 0 l-4 26 q-26 12 -52 0 z"/>
+  <!-- hands -->
+  <ellipse class="n" cx="45" cy="196" rx="9" ry="12"/>
+  <ellipse class="n" cx="175" cy="196" rx="9" ry="12"/>
+  <!-- knees -->
+  <ellipse class="n" cx="94" cy="286" rx="12" ry="12"/>
+  <ellipse class="n" cx="126" cy="286" rx="12" ry="12"/>
+  <!-- feet -->
+  <path class="n" d="M84 372 q10 -6 18 0 l0 12 -18 0 z"/>
+  <path class="n" d="M118 372 q10 -6 18 0 l0 12 -18 0 z"/>
+
+  <!-- traps upper (front, minor) -->
+  <path class="m" data-muscle="traps-upper" d="M96 58 q14 -2 28 0 l8 14 q-22 8 -44 0 z"/>
+  <!-- side delts -->
+  <ellipse class="m" data-muscle="side-delt" cx="72" cy="86" rx="17" ry="19"/>
+  <ellipse class="m" data-muscle="side-delt" cx="148" cy="86" rx="17" ry="19"/>
+  <!-- front delts -->
+  <ellipse class="m" data-muscle="front-delt" cx="85" cy="92" rx="12" ry="13"/>
+  <ellipse class="m" data-muscle="front-delt" cx="135" cy="92" rx="12" ry="13"/>
+  <!-- chest -->
+  <path class="m" data-muscle="chest" d="M88 82 q18 -6 20 12 l0 20 q-16 8 -24 -4 q-4 -18 4 -28z"/>
+  <path class="m" data-muscle="chest" d="M132 82 q-18 -6 -20 12 l0 20 q16 8 24 -4 q4 -18 -4 -28z"/>
+  <!-- biceps -->
+  <ellipse class="m" data-muscle="biceps" cx="64" cy="120" rx="9" ry="22" transform="rotate(6 64 120)"/>
+  <ellipse class="m" data-muscle="biceps" cx="156" cy="120" rx="9" ry="22" transform="rotate(-6 156 120)"/>
+  <!-- forearms (front) -->
+  <ellipse class="m" data-muscle="forearm" cx="53" cy="162" rx="8" ry="24" transform="rotate(8 53 162)"/>
+  <ellipse class="m" data-muscle="forearm" cx="167" cy="162" rx="8" ry="24" transform="rotate(-8 167 162)"/>
+  <!-- abs -->
+  <rect class="m" data-muscle="abs" x="98" y="116" width="24" height="56" rx="8"/>
+  <!-- obliques -->
+  <path class="m" data-muscle="obliques" d="M86 120 q6 26 8 46 q-8 4 -12 -6 q-2 -22 4 -40z"/>
+  <path class="m" data-muscle="obliques" d="M134 120 q-6 26 -8 46 q8 4 12 -6 q2 -22 -4 -40z"/>
+  <!-- abductors (outer hip / TFL) -->
+  <ellipse class="m" data-muscle="abductors" cx="78" cy="196" rx="8" ry="14"/>
+  <ellipse class="m" data-muscle="abductors" cx="142" cy="196" rx="8" ry="14"/>
+  <!-- quads -->
+  <path class="m" data-muscle="quads" d="M80 200 q14 -6 22 4 l-2 74 q-14 6 -22 -4 z"/>
+  <path class="m" data-muscle="quads" d="M140 200 q-14 -6 -22 4 l2 74 q14 6 22 -4 z"/>
+  <!-- adductors -->
+  <path class="m" data-muscle="adductors" d="M104 202 l6 0 -2 62 q-6 2 -8 -4 z"/>
+  <path class="m" data-muscle="adductors" d="M116 202 l-6 0 2 62 q6 2 8 -4 z"/>
+  <!-- tibialis (front shin) -->
+  <ellipse class="m" data-muscle="tibialis" cx="92" cy="326" rx="8" ry="32"/>
+  <ellipse class="m" data-muscle="tibialis" cx="128" cy="326" rx="8" ry="32"/>
+</svg>`;
+
+/* Back view */
+const BACK = `
+<svg viewBox="0 0 220 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="منظر خلفي">
+  <ellipse class="n" cx="110" cy="30" rx="19" ry="22"/>
+  <path class="n" d="M98 50 h24 v14 q-12 6 -24 0 z"/>
+  <ellipse class="n" cx="45" cy="196" rx="9" ry="12"/>
+  <ellipse class="n" cx="175" cy="196" rx="9" ry="12"/>
+  <ellipse class="n" cx="94" cy="286" rx="12" ry="12"/>
+  <ellipse class="n" cx="126" cy="286" rx="12" ry="12"/>
+  <path class="n" d="M84 372 q10 -6 18 0 l0 12 -18 0 z"/>
+  <path class="n" d="M118 372 q10 -6 18 0 l0 12 -18 0 z"/>
+
+  <!-- traps upper (kite) -->
+  <path class="m" data-muscle="traps-upper" d="M92 58 q18 -3 36 0 l14 20 q-32 12 -64 0 z"/>
+  <!-- rear delts -->
+  <ellipse class="m" data-muscle="rear-delt" cx="72" cy="88" rx="16" ry="18"/>
+  <ellipse class="m" data-muscle="rear-delt" cx="148" cy="88" rx="16" ry="18"/>
+  <!-- traps mid / rhomboids -->
+  <path class="m" data-muscle="traps-mid" d="M96 82 q14 -3 28 0 l0 42 q-14 6 -28 0 z"/>
+  <!-- teres -->
+  <ellipse class="m" data-muscle="teres" cx="84" cy="112" rx="8" ry="9"/>
+  <ellipse class="m" data-muscle="teres" cx="136" cy="112" rx="8" ry="9"/>
+  <!-- lats (V) -->
+  <path class="m" data-muscle="lats" d="M92 108 q-16 8 -14 30 l24 24 4 -54 z"/>
+  <path class="m" data-muscle="lats" d="M128 108 q16 8 14 30 l-24 24 -4 -54 z"/>
+  <!-- lower back -->
+  <path class="m" data-muscle="lower-back" d="M100 150 h20 l-2 30 q-8 4 -16 0 z"/>
+  <!-- triceps -->
+  <ellipse class="m" data-muscle="triceps" cx="64" cy="120" rx="9" ry="22" transform="rotate(6 64 120)"/>
+  <ellipse class="m" data-muscle="triceps" cx="156" cy="120" rx="9" ry="22" transform="rotate(-6 156 120)"/>
+  <!-- forearms back -->
+  <ellipse class="m" data-muscle="forearm" cx="53" cy="162" rx="8" ry="24" transform="rotate(8 53 162)"/>
+  <ellipse class="m" data-muscle="forearm" cx="167" cy="162" rx="8" ry="24" transform="rotate(-8 167 162)"/>
+  <!-- glutes -->
+  <path class="m" data-muscle="glutes" d="M82 186 q16 -8 26 2 l0 20 q-16 10 -28 -2 q-2 -12 2 -20z"/>
+  <path class="m" data-muscle="glutes" d="M138 186 q-16 -8 -26 2 l0 20 q16 10 28 -2 q2 -12 -2 -20z"/>
+  <!-- hamstrings -->
+  <path class="m" data-muscle="hamstrings" d="M82 212 q14 -6 22 4 l-2 66 q-14 6 -22 -4 z"/>
+  <path class="m" data-muscle="hamstrings" d="M138 212 q-14 -6 -22 4 l2 66 q14 6 22 -4 z"/>
+  <!-- calves -->
+  <ellipse class="m" data-muscle="calves" cx="93" cy="322" rx="10" ry="30"/>
+  <ellipse class="m" data-muscle="calves" cx="127" cy="322" rx="10" ry="30"/>
+</svg>`;
+
+/* ---------------- Rendering ---------------- */
+const daysEl = document.getElementById('days');
+const contentEl = document.getElementById('content');
+let curDay = 'sat', curEx = 0;
+
+DAYS.forEach(d=>{
+  const b=document.createElement('button');
+  b.className='day-tab'+(d.type==='cardio'?' cardio':'')+(d.key===curDay?' active':'');
+  b.innerHTML=`${d.name}<small>${d.tag}</small>`;
+  b.onclick=()=>{curDay=d.key;curEx=0;syncDays();render();};
+  b.dataset.key=d.key;
+  daysEl.appendChild(b);
+});
+function syncDays(){[...daysEl.children].forEach(c=>c.classList.toggle('active',c.dataset.key===curDay));}
+
+function esc(s){return s;}
+
+function render(){
+  const day=DAYS.find(d=>d.key===curDay);
+  if(day.type==='cardio'){renderCardio();return;}
+  const list=EX[curDay];
+  contentEl.className='layout';
+  contentEl.innerHTML=`
+    <aside class="list" id="list"></aside>
+    <section class="detail" id="detail"></section>`;
+  const listEl=document.getElementById('list');
+  list.forEach((ex,i)=>{
+    const btn=document.createElement('button');
+    btn.className='ex-btn'+(i===curEx?' active':'');
+    btn.innerHTML=`
+      <span class="ex-idx">${i+1}</span>
+      <span class="ex-meta">
+        <span class="ex-name">${ex.n}</span>
+        <span class="ex-en">${ex.en}</span>
+      </span>
+      <span class="ex-scheme">${ex.s.split('·')[0].trim()}</span>`;
+    btn.onclick=()=>{curEx=i;render();
+      if(window.innerWidth<900){document.getElementById('detail').scrollIntoView({behavior:'smooth',block:'start'});}};
+    listEl.appendChild(btn);
+  });
+  renderDetail(list[curEx]);
+}
+
+function muscleChips(arr,cls){
+  return arr.map(m=>`<span class="chip ${cls}">${M[m]||m}</span>`).join('');
+}
+
+function renderDetail(ex){
+  const detEl=document.getElementById('detail');
+  const restPart = ex.s.split('·')[1] ? ex.s.split('·')[1].trim() : '';
+  detEl.innerHTML=`
+    <div class="d-head">
+      <div class="d-title">
+        <h2>${ex.n}</h2>
+        <div class="en">${ex.en}</div>
+      </div>
+      <div class="d-badges">
+        <span class="badge hot"><b>${ex.s.split('·')[0].trim()}</b></span>
+        ${restPart?`<span class="badge"><b>${restPart}</b></span>`:''}
+      </div>
+    </div>
+    <div class="d-body">
+      <div class="map-wrap">
+        <div class="map-figs">
+          <div class="fig">${FRONT}<div class="fig-cap">أمامي</div></div>
+          <div class="fig">${BACK}<div class="fig-cap">خلفي</div></div>
+        </div>
+        <div class="legend">
+          <span><i style="background:#FF3B47"></i>عضلة رئيسية</span>
+          <span><i style="background:#F6A23B"></i>عضلة مساعدة</span>
+          <span><i style="background:#3E4759"></i>غير مستهدفة</span>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h4><span class="ic">🎯</span> العضلات المستهدفة</h4>
+        <div class="chips">
+          ${muscleChips(ex.p,'p')}
+          ${muscleChips(ex.x,'s')}
+        </div>
+      </div>
+
+      <div class="sec">
+        <h4><span class="ic">💪</span> الفوائد</h4>
+        <ul class="clean">${ex.b.map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+
+      <div class="sec">
+        <h4><span class="ic">🧭</span> نقاط الأداء الصحيح</h4>
+        <ul class="clean form">${ex.f.map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+
+      <div class="sec">
+        <h4><span class="ic">🔬</span> من الأبحاث</h4>
+        <div class="sci-box">
+          <span class="tag">${ex.sci.t}</span>
+          <div>${ex.sci.x}</div>
+          <span class="cite">${ex.sci.c}</span>
+        </div>
+      </div>
+
+      <a class="vid" href="${ex.v}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        شاهد التمرين
+      </a>
+    </div>`;
+  // highlight muscles
+  requestAnimationFrame(()=>{
+    detEl.querySelectorAll('.m').forEach(el=>el.classList.remove('primary','secondary'));
+    ex.p.forEach(m=>detEl.querySelectorAll(`.m[data-muscle="${m}"]`).forEach(el=>el.classList.add('primary')));
+    ex.x.forEach(m=>detEl.querySelectorAll(`.m[data-muscle="${m}"]`).forEach(el=>{if(!el.classList.contains('primary'))el.classList.add('secondary');}));
+  });
+}
+
+function renderCardio(){
+  contentEl.className='';
+  contentEl.innerHTML=`
+   <div class="cardio-panel">
+     <span class="eyebrow" style="color:#38BDF8;background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.3)"><span class="dot" style="background:#38BDF8;box-shadow:0 0 10px #38BDF8"></span> يوم الاثنين</span>
+     <h2 style="margin-top:12px">كارديو — قلب أقوى وتعافٍ أفضل</h2>
+     <p style="color:var(--muted);max-width:640px">يوم الكارديو ليس «عقوبة» بل ركيزة صحية: يحسّن كفاءة القلب والأوعية، ويسرّع التعافي بين جلسات المقاومة عبر زيادة تدفق الدم، ويساعد في إدارة الوزن. الأدلة الوبائية تربط الجمع بين التمارين الهوائية وتدريب المقاومة بأدنى معدلات وفاة مقارنة بأيٍّ منهما وحده.</p>
+     <div class="cardio-grid">
+       <div class="cardio-card">
+         <h4>◆ كارديو منخفض الشدّة (LISS)</h4>
+         <p style="color:var(--muted);font-size:14px;margin:0">٣٠–٤٥ دقيقة مشي سريع / دراجة / إهليلجي عند شدّة يمكنك خلالها التحدّث. الأمثل للتعافي وحرق سعرات دون إرهاق الجهاز العصبي قبل يوم الأرجل.</p>
+       </div>
+       <div class="cardio-card">
+         <h4>◆ كارديو متقطّع (HIIT)</h4>
+         <p style="color:var(--muted);font-size:14px;margin:0">٦–١٠ جولات: ٢٠–٣٠ث شدّة عالية + ٦٠–٩٠ث راحة. يرفع اللياقة القلبية بكفاءة زمنية عالية؛ مرّة أسبوعياً تكفي لتجنّب التعارض مع الحديد.</p>
+       </div>
+       <div class="cardio-card">
+         <h4>◆ الخطوات اليومية</h4>
+         <p style="color:var(--muted);font-size:14px;margin:0">استهدف ٧٬٠٠٠–١٠٬٠٠٠ خطوة يومياً كنشاط قاعدي (NEAT). أثره التراكمي على الصحة والتكوين الجسدي كبير ولا يُرهق التعافي.</p>
+       </div>
+       <div class="cardio-card">
+         <h4>◆ متى وكم؟</h4>
+         <p style="color:var(--muted);font-size:14px;margin:0">للحفاظ على العضلة، افصل الكارديو الشديد عن يوم الأرجل قدر الإمكان، وأبقِ الحجم معتدلاً. حتى ٩٠–١٢٠ دقيقة أسبوعياً من المقاومة كافية للفائدة الصحية القصوى.</p>
+       </div>
+     </div>
+     <div class="sci-box" style="margin-top:18px">
+       <span class="tag">من الأبحاث</span>
+       <div>الأشخاص النشطون هوائياً <b>ومارِسو تقوية العضلات</b> سجّلوا أدنى مخاطر: انخفاض الوفاة الكلية بنحو ٤٠٪ والقلبية بنحو ٤٧٪ مقارنة بغير النشطين — أي أن الجمع بين النوعين أفضل من كلٍّ على حدة.</div>
+       <span class="cite">Momma et al., Br J Sports Med 2022; WHO 2020 Guidelines</span>
+     </div>
+   </div>`;
+}
+
+render();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
