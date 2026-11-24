@@ -1,271 +1,302 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1D4FD7">
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B2E4A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="تماريني">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
-<title>تماريني</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<title>سجل تماريني</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Cairo:wght@400;600;700;900&display=swap">
+<script src="xlsx.min.js"></script>
 <style>
-/* Layout: one column; a segmented switch, a four-day strip, then expandable exercise cards.
-   Colour language borrows the colours of competition weight plates. */
-:root{
-  --bg:#F1F3F7; --surface:#FFFFFF; --ink:#14181F; --muted:#5A6372; --line:#DDE1E9;
-  --accent:#1D4FD7; --accent-ink:#FFFFFF; --hot:#C8202F; --warm:#E9A820; --new:#12805A;
-  --body:#CDD3DE; --mus:#B3BBCA;
-  --f-display:"Times New Roman",Times,"Liberation Serif",serif;
-  --f-body:"Times New Roman",Times,"Liberation Serif",serif;
-  color-scheme:light;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0E1218; --surface:#171C24; --ink:#E8ECF2; --muted:#98A2B3; --line:#262D38;
-    --accent:#7AA2FF; --accent-ink:#0E1218; --hot:#FF6B78; --warm:#F2B93B; --new:#4AD3A0;
-    --body:#2A313D; --mus:#3B4452; color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0E1218; --surface:#171C24; --ink:#E8ECF2; --muted:#98A2B3; --line:#262D38;
-  --accent:#7AA2FF; --accent-ink:#0E1218; --hot:#FF6B78; --warm:#F2B93B; --new:#4AD3A0;
-  --body:#2A313D; --mus:#3B4452; color-scheme:dark;
-}
+/* Layout: week strip, day tabs, one card per exercise (name, sets and reps, video, done button). Two tabs only. */
+
+/* Layout: sticky week strip on top, one scrolling column of exercise cards, three-tab bar at the bottom.
+   Look: training logbook. Chalk paper, ink text, one signal color for primary muscles and actions. */
+:root{--bg:#F3F1EC;--card:#FFFFFF;--ink:#1A222C;--mute:#66707C;--line:#DCD8CF;--acc:#D8451F;--acc-ink:#FFFFFF;--acc-soft:#FBE4DC;--cool:#2D6C8C;--cool-soft:#DDEAF1;--ok:#2B8A57;--ok-soft:#DDF0E5;--bad:#C23B3B;--bad-soft:#F7DEDE;--field:#F7F6F2;--c1:#2D6C8C;--s1:#DDEAF1;--c2:#B7791F;--s2:#F8EAD0;--c3:#7A4FA3;--s3:#EBE1F4;--c4:#2B8A57;--s4:#DDF0E5;--c5:#C23B6B;--s5:#F6DEE8;--c6:#4A5A70;--s6:#E1E6EE;
+--f-ar:"Cairo","Segoe UI",Tahoma,sans-serif;--f-num:"Barlow Condensed","Cairo",Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171D;--card:#1B222B;--ink:#ECEFF3;--mute:#99A4B1;--line:#2E3844;--acc:#FF7A4D;--acc-ink:#1A0E08;--acc-soft:#3A2218;--cool:#79B6D6;--cool-soft:#1D3340;--ok:#52C58A;--ok-soft:#173226;--bad:#F08585;--bad-soft:#3A1E1E;--field:#151B22;--c1:#79B6D6;--s1:#1D3340;--c2:#E6B450;--s2:#3A2E14;--c3:#B79AE0;--s3:#2C2140;--c4:#52C58A;--s4:#173226;--c5:#F08AB0;--s5:#3A1E2A;--c6:#A6B4C8;--s6:#26303D;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12171D;--card:#1B222B;--ink:#ECEFF3;--mute:#99A4B1;--line:#2E3844;--acc:#FF7A4D;--acc-ink:#1A0E08;--acc-soft:#3A2218;--cool:#79B6D6;--cool-soft:#1D3340;--ok:#52C58A;--ok-soft:#173226;--bad:#F08585;--bad-soft:#3A1E1E;--field:#151B22;--c1:#79B6D6;--s1:#1D3340;--c2:#E6B450;--s2:#3A2E14;--c3:#B79AE0;--s3:#2C2140;--c4:#52C58A;--s4:#173226;--c5:#F08AB0;--s5:#3A1E2A;--c6:#A6B4C8;--s6:#26303D;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.65 var(--f-body);direction:rtl;
-  padding-block:20px 36px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.app{max-width:720px;margin-inline:auto;display:flex;flex-direction:column;gap:16px}
-h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;font-weight:700}
-h1{font-size:30px;line-height:1.2}
-.sub{color:var(--muted);margin:4px 0 0;font-size:14px}
-button{font:inherit;color:inherit;cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
-.seg button{border:0;background:transparent;border-radius:9px;padding:9px 6px;font-weight:600;color:var(--muted)}
-.seg button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
-.days{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.day{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 4px;text-align:center;display:flex;flex-direction:column;gap:2px}
-.day b{font-family:var(--f-display);font-size:17px;font-weight:700}
-.day span{font-size:12px;color:var(--muted)}
-.day[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
-.day[aria-selected="true"] b{color:var(--accent)}
-.head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px}
-.head h2{font-size:22px}
-.stats{display:flex;gap:14px;color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
-.stats b{color:var(--ink);font-weight:600}
-.list{display:flex;flex-direction:column;gap:8px}
-details.ex{background:var(--surface);border:1px solid var(--line);border-radius:12px}
-details.ex>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;padding:12px 12px}
-details.ex>summary::-webkit-details-marker{display:none}
-.n{font-family:var(--f-display);font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
-.nm{min-width:0}
-.nm b{display:block;font-weight:600;line-height:1.35}
-.nm small{display:block;color:var(--muted);direction:ltr;text-align:right;font-size:12.5px}
-.sr{font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;white-space:nowrap;text-align:left;direction:ltr}
-.tag{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:99px;margin-inline-start:6px;vertical-align:middle;border:1px solid currentColor}
-.tag.alt{color:var(--new)}
-.tag.chg{color:var(--accent)}
-.body{padding:0 12px 14px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:12px}
-.figs{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
-.figs figure{margin:0;text-align:center;font-size:12px;color:var(--muted)}
-.figs svg{width:96px;height:auto;display:block}
-.info{flex:1;min-width:190px;display:flex;flex-direction:column;gap:8px}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ar);font-size:16px;line-height:1.55;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto}
+bdi,.en{unicode-bidi:isolate}
+header.top{background:var(--bg);padding:10px 0 6px;border-bottom:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:10px}
+.sp{flex:1}
+h1{font-size:22px;margin:0;font-weight:900}
+.wave{font:700 15px var(--f-ar);color:var(--c,var(--mute));background:var(--s,transparent);border-radius:999px;padding:2px 12px}
+.weeks{display:flex;gap:6px;overflow-x:auto;padding:8px 0 4px;scrollbar-width:none}
+.weeks::-webkit-scrollbar{display:none}
+.wv1{--c:var(--c1);--s:var(--s1)}.wv2{--c:var(--c2);--s:var(--s2)}.wv3{--c:var(--c3);--s:var(--s3)}.wv4{--c:var(--c4);--s:var(--s4)}.wv5{--c:var(--c5);--s:var(--s5)}.wv6{--c:var(--c6);--s:var(--s6)}
+.wk{flex:0 0 auto;width:46px;height:46px;border-radius:12px;border:2px solid var(--c,var(--line));background:var(--s,var(--card));font:700 22px var(--f-num);position:relative}
+.wk[aria-pressed="true"]{background:var(--c,var(--ink));color:var(--bg);border-color:var(--c,var(--ink))}
+.wk.has::after{content:"";position:absolute;top:5px;inset-inline-start:5px;width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.wk.wstart{margin-inline-start:8px}
+.days{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 10px}
+.dy{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:8px 4px;text-align:center;min-width:0}
+.dy b{display:block;font-size:15px}
+.dy small{display:block;color:var(--mute);font-size:12px;line-height:1.3}
+.days .dy{border:2px solid var(--c,var(--line))}
+.dy[aria-pressed="true"]{background:var(--c,var(--acc));color:var(--bg)}
+.dy[aria-pressed="true"] small{color:var(--bg);opacity:.9}
+.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .25s}
+.barlbl{display:flex;justify-content:space-between;color:var(--mute);font-size:13px;margin:6px 0 12px}
+.ex{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:clip}
+.ex.done{border-color:var(--ok)}
+.hd{display:flex;gap:12px;align-items:center;width:100%;background:none;border:0;padding:12px 14px;text-align:start}
+.hdw{display:flex;align-items:center}
+.hdw.open{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;background:var(--card);border-bottom:1px solid var(--line);box-shadow:0 3px 8px rgba(0,0,0,.08)}
+.hdw .hd{flex:1;width:auto;min-width:0}
+.vls{display:flex;flex-direction:column;gap:6px;padding-inline-end:12px;flex:0 0 auto}
+.vls .donebtn{border:2px solid var(--acc);background:var(--acc);color:var(--acc-ink);border-radius:999px;padding:4px 12px;font:900 15px var(--f-ar);min-height:38px;white-space:nowrap}
+.vls .donebtn[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.vls a{border:1px solid var(--cool);color:var(--cool);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;min-height:34px;display:flex;align-items:center}
+.hd[aria-expanded="true"] .ar,.hd[aria-expanded="true"] .chip:not(.b){display:none}
+.num{flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--field);border:1px solid var(--line);font:700 18px var(--f-num)}
+.ex.done .num{background:var(--ok);border-color:var(--ok);color:#fff}
+.tt{min-width:0;flex:1}
+.en{display:block;font:700 19px/1.15 var(--f-num);letter-spacing:.2px;text-align:start}
+.ar{display:block;color:var(--mute);font-size:14px}
+.pre{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{display:inline-block;border-radius:999px;padding:1px 9px;font-size:13px;background:var(--field);border:1px solid var(--line);white-space:nowrap}
+.chip.p{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:600}
+.chip.s{background:var(--cool-soft);border-color:var(--cool-soft);color:var(--cool);font-weight:600}
+.st{font:700 17px var(--f-num);color:var(--mute);white-space:nowrap}
+.ex.done .st{color:var(--ok)}
+.bd{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.quote{border-inline-start:4px solid var(--acc);padding:2px 10px;font-weight:700;font-size:17px}
+.lab{font-size:13px;color:var(--mute);margin-bottom:4px;font-weight:600}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:12.5px;padding:2px 10px;border-radius:99px;border:1px solid var(--line)}
-.chip.p{background:var(--hot);border-color:var(--hot);color:#fff}
-.chip.s{border-color:var(--warm);box-shadow:inset 0 0 0 1px var(--warm)}
-.cue{margin:0}
-.meta{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
-.vid{align-self:flex-start;color:var(--accent);font-weight:600;text-decoration:none;border-bottom:1px solid currentColor}
-.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted)}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
-.b{fill:var(--body)}
-.r *{fill:var(--mus)}
-.r.s *{fill:var(--warm)}
-.r.p *{fill:var(--hot)}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
-.bars{display:flex;flex-direction:column;gap:9px}
-.bar{display:grid;grid-template-columns:104px 1fr 78px;gap:10px;align-items:center;font-size:14px}
-.bar .t{height:10px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
-.bar .t i{display:block;height:100%;background:var(--accent);border-radius:99px}
-.bar .v{font-variant-numeric:tabular-nums;font-weight:600;text-align:left;direction:ltr}
-.bar .v small{color:var(--muted);font-weight:400}
-.note{color:var(--muted);font-size:13px;margin:10px 0 0}
-.tbl{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:360px;font-size:14px}
-th,td{text-align:right;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-size:12.5px;color:var(--muted);font-weight:600}
-td small{display:block;direction:ltr;text-align:right;color:var(--muted)}
-.arrow{color:var(--muted)}
-[hidden]{display:none!important}
-@media (max-width:420px){.bar{grid-template-columns:88px 1fr 74px}.day b{font-size:15px}}
-@media (prefers-reduced-motion:no-preference){details.ex{transition:border-color .15s}details.ex[open]{border-color:var(--accent)}}
-</style>
-</head>
-<body>
+.hint{background:var(--field);border:1px dashed var(--line);border-radius:10px;padding:8px 10px;font-size:14px}
+.hint b{font-family:var(--f-num);font-size:17px}
+.sets{display:grid;grid-template-columns:34px 1fr 1fr;gap:8px;align-items:center}
+.sets .h{font-size:13px;color:var(--mute);font-weight:600;text-align:center}
+.sn{font:700 20px var(--f-num);text-align:center;color:var(--mute)}
+input.f{width:100%;min-width:0;height:48px;border-radius:10px;border:1px solid var(--line);background:var(--field);padding:0 10px;text-align:center;font:600 22px var(--f-num);direction:ltr}
+input.f::placeholder{color:var(--mute);opacity:.55}
+input.t{width:100%;min-width:0;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--field);padding:0 12px;font-size:15px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 14px;font-weight:600;font-size:15px;min-height:44px}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.btn.ink{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn.bad{color:var(--bad);border-color:var(--bad)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+details.inf{border-top:1px solid var(--line);padding-top:8px}
+details.inf summary{cursor:pointer;font-weight:700;min-height:32px}
+details.inf p{margin:6px 0}
+.vl{display:flex;flex-wrap:wrap;gap:8px}
+.vl a{display:inline-block;border:1px solid var(--cool);color:var(--cool);border-radius:10px;padding:7px 12px;text-decoration:none;font-weight:600;font-size:14px}
+nav.tabs{position:fixed;inset:auto 0 0 0;z-index:6;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,1fr);padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
+nav.tabs button{background:none;border:0;border-radius:10px;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;font-weight:600;color:var(--mute);min-height:52px}
+nav.tabs button[aria-pressed="true"]{color:var(--acc);background:var(--acc-soft)}
+nav.tabs svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pill{position:fixed;z-index:7;inset-inline:0;bottom:calc(76px + env(safe-area-inset-bottom,0px));margin:0 auto;width:max-content;max-width:calc(100% - 32px);display:flex;gap:12px;align-items:center;background:var(--ink);color:var(--bg);border-radius:999px;padding:6px 8px 6px 16px;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+.pill b{font:700 24px var(--f-num);letter-spacing:.5px}
+.pill.go b{color:var(--ok)}
+.pill button{border:0;border-radius:999px;background:var(--bg);color:var(--ink);padding:6px 12px;font-weight:600}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.kpi small{color:var(--mute);display:block;font-size:13px}
+.kpi b{font:700 28px var(--f-num)}
+.kpi span{font-size:13px;font-weight:700}
+.up{color:var(--ok)}.dn{color:var(--bad)}
+select.sel{width:100%;height:48px;border-radius:10px;border:1px solid var(--line);background:var(--card);padding:0 10px;font-size:16px}
+.seg{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.seg button{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 6px;font-weight:600;font-size:14px;min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;margin-bottom:12px}
+.chart svg{display:block;width:100%;height:auto;max-width:100%}
+.chart .ax{stroke:var(--line);stroke-width:1}
+.chart .wv{stroke:var(--mute);stroke-width:1;stroke-dasharray:3 4;opacity:.6}
+.chart .ln{fill:none;stroke:var(--acc);stroke-width:3;stroke-linejoin:round}
+.chart .pt{fill:var(--card);stroke:var(--acc);stroke-width:3}
+.chart .pt.last{fill:var(--acc)}
+.chart text{fill:var(--mute);font:600 11px var(--f-num)}
+.chart text.v{fill:var(--ink);font:700 13px var(--f-num)}
+.chart text.wl{font:600 10px var(--f-ar)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:14px}
+.tbl table{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--line);font:600 15px var(--f-num);white-space:nowrap}
+.tbl th{background:var(--field);color:var(--mute);font-size:13px;font-family:var(--f-ar)}
+.tbl td.nm,.tbl th.nm{text-align:left;direction:ltr;position:sticky;inset-inline-start:0;background:var(--card);font:600 13px var(--f-ar);max-width:150px;overflow:hidden;text-overflow:ellipsis;z-index:1;border-inline-end:1px solid var(--line)}
+.tbl th.nm{background:var(--field)}
+.tbl td.u{background:var(--ok-soft);color:var(--ok)}
+.tbl td.d{background:var(--bad-soft);color:var(--bad)}
+.tbl td.e{color:var(--mute);opacity:.5}
+h2{font-size:18px;margin:18px 0 8px;font-weight:900}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.card p{margin:0;color:var(--mute);font-size:14px}
+.msg{font-size:14px;font-weight:600;min-height:20px}
+.empty{color:var(--mute);text-align:center;padding:22px 10px}
+.chip.b{background:var(--ink);border-color:var(--ink);color:var(--bg);font-weight:700}
+.plan{font-size:16px}
+.bigdone{width:100%;min-height:68px;border-radius:14px;border:0;background:var(--acc);color:var(--acc-ink);font:900 21px var(--f-ar)}
+.bigdone.on{background:var(--ok);color:#fff;font-size:17px}
+.rows{display:flex;flex-direction:column;gap:8px}
+.stepper{display:flex;gap:6px;align-items:center}
+.stepper input.f{flex:1}
+.stp{flex:0 0 48px;width:48px;height:48px;border-radius:10px;border:1px solid var(--line);background:var(--card);font:700 28px var(--f-num);line-height:1}
+.srow{display:grid;grid-template-columns:24px 1fr 56px;gap:8px;align-items:center}
+.srow.pw{grid-template-columns:24px 84px 1fr 56px}
+.srow .f.sw{font-size:18px}
+.tick{width:56px;height:48px;border-radius:10px;border:2px solid var(--line);background:var(--field);font-size:26px;color:var(--mute)}
+.tick[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.srow.on input.f{border-color:var(--ok)}
+.rpes{display:flex;gap:6px}
+.rpes button{flex:1;height:46px;border-radius:10px;border:1px solid var(--line);background:var(--card);font:700 22px var(--f-num)}
+.rpes button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.rpehelp{margin-bottom:12px}
+.rpehelp ul{margin:4px 0;padding-inline-start:20px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
 
-<div class="app">
-  <header>
-    <h1>تماريني</h1>
-    <p class="sub" id="sub"></p>
-  </header>
-  <div class="seg" role="tablist" aria-label="العرض">
-    <button role="tab" id="t-days" aria-selected="true" data-v="days">الأيام</button>
-    <button role="tab" id="t-vol" aria-selected="false" data-v="vol">التوزيع</button>
-    <button role="tab" id="t-chg" aria-selected="false" data-v="chg">التغييرات</button>
-  </div>
-  <section id="v-days" aria-labelledby="t-days">
-    <div class="days" id="days" role="tablist" aria-label="أيام التمرين"></div>
-    <div id="day" style="margin-top:14px;display:flex;flex-direction:column;gap:12px"></div>
-  </section>
-  <section id="v-vol" hidden aria-labelledby="t-vol"></section>
-  <section id="v-chg" hidden aria-labelledby="t-chg"></section>
+</style></head><body>
+<div class="wrap">
+<header class="top">
+ <div class="row"><h1>سجل تماريني</h1><span class="sp"></span><span class="wave" id="wave"></span></div>
+ <div class="weeks" id="weeks" role="group" aria-label="الأسبوع"></div>
+</header>
+<main id="app"></main>
 </div>
+<nav class="tabs" id="tabs">
+ <button data-act="tab" data-v="log"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>التمارين</button>
+ <button data-act="tab" data-v="exp"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14"/></svg>التصدير</button>
+</nav>
 <script>
-(function(){
-var MUS={chest:"الصدر",lats:"اللاتس",midback:"منتصف الظهر",erectors:"أسفل الظهر",frontdelt:"الكتف الأمامي",sidedelt:"الكتف الجانبي",reardelt:"الكتف الخلفي",biceps:"البايسبس",triceps:"الترايسبس",abs:"البطن",quads:"الفخذ الأمامي",adductors:"المقرّبات",hams:"الفخذ الخلفي",glutes:"الأرداف",abductors:"المبعدات",calves:"السمانة"};
-var GROUPS=[["الصدر",["chest"]],["الظهر",["lats","midback"]],["الكتف الأمامي",["frontdelt"]],["الكتف الجانبي",["sidedelt"]],["الكتف الخلفي",["reardelt"]],["الترايسبس",["triceps"]],["البايسبس",["biceps"]],["البطن",["abs"]],["الفخذ الأمامي",["quads"]],["الفخذ الخلفي",["hams"]],["الأرداف",["glutes"]],["المبعدات",["abductors"]],["المقرّبات",["adductors"]],["السمانة",["calves"]]];
-var S="https://www.youtube.com/shorts/";
-function E(ar,en,sets,reps,rest,p,s,cue,vid,tag,note){return{ar:ar,en:en,sets:sets,reps:reps,rest:rest,p:p,s:s,cue:cue,vid:vid,tag:tag||"",note:note||""};}
-var DAYS=[
-{d:"السبت",k:"علوي 1",en:"Upper 1",ex:[
-E("ضغط الصدر بالكيبل واقفاً","Standing Cable Chest Press",4,"8-10",90,["chest"],["frontdelt","triceps"],"قف بوضعية خطوة، واضغط المقبضين أمامك بمرفقين نصف مفتوحين دون ميل الجذع.",null,"alt","Machine Chest Press"),
-E("سحب بجهاز المساعدة","Assisted Pull-Up Machine",4,"8-10",90,["lats"],["biceps","midback"],"قبضة واسعة. اسحب الصدر نحو البار وقُد الحركة بالمرفقين، وانزل ببطء لأقصى مدى.",null,"alt","Lat Pulldown"),
-E("ضغط الكتف بجهاز سميث","Smith Machine Seated Shoulder Press",3,"10-12",90,["frontdelt"],["sidedelt","triceps"],"اضبط المقعد ليبدأ البار عند الذقن وادفع للأعلى دون تقويس الظهر.",null,"alt","Machine Shoulder Press"),
-E("سحب بجهاز الصدر المسنود","Chest-Supported Machine Row",4,"10-12",90,["midback","lats"],["biceps","reardelt"],"الصدر على المسند. اسحب المرفقين للخلف مع ضم لوحي الكتف دون رفع الكتفين.",null,"alt","Seated Cable Row"),
-E("فتح الصدر من الأسفل للأعلى","Low-to-High Cable Fly",3,"10-12",60,["chest"],["frontdelt"],"ابدأ من الأسفل ثم ارفع اليدين نحو أعلى الصدر بمرفقين ثابتين مثنيين قليلاً.",null,"alt","Cable Fly"),
-E("رفرفة جانبية بالجهاز","Machine Lateral Raise",3,"12-15",60,["sidedelt"],[],"اضغط بالمرفقين لا باليدين وارفع حتى مستوى الكتف دون رفع الكتفين نحو الأذنين.",null,"alt","Cable Lateral Raise"),
-E("ترايسبس بالجهاز","Machine Triceps Extension",3,"12-15",60,["triceps"],[],"الكتفان للأسفل والمرفقان ثابتان. مدّد الذراعين كاملاً وعد ببطء.",null,"alt","Tricep Rope Pushdown"),
-E("كيرل على مسند بالجهاز","Machine Preacher Curl",3,"12-15",60,["biceps"],[],"الذراعان على المسند. اثنِ بالكامل وانزل ببطء دون فرد قسري للمرفق.",null,"alt","Cable Straight-Bar Curl")
-]},
-{d:"الأحد",k:"سفلي 1",en:"Lower 1",ex:[
-E("سكوات بجهاز سميث","Smith Machine Squat",4,"10-12",90,["quads"],["glutes"],"القدمان أمام البار قليلاً. انزل بتحكم إلى عمق مريح والظهر محايد.",null,"alt","Hack Squat"),
-E("في سكوات","V-Squat Machine",4,"10-12",90,["quads"],["glutes"],"الكتفان تحت المساند. انزل إلى عمق مريح وادفع بكامل القدم دون قفل الركبتين.",null,"alt","Leg Press"),
-E("تمديد الركبة لساق واحدة","Single-Leg Leg Extension",3,"12-15 لكل جهة",60,["quads"],[],"مدّد ركبة واحدة بتحكم وتوقف لحظة في القمة ثم بدّل الجهة.",null,"alt","Leg Extension"),
-E("ثني الركبة واقفاً","Standing Leg Curl Machine",4,"10-12",90,["hams"],["calves"],"اثنِ الركبة دون تحريك الورك وعد ببطء.",null,"alt","Lying Leg Curl"),
-E("ركلة الأرداف بالكيبل","Cable Glute Kickback",3,"12-15 لكل جهة",60,["glutes"],["hams"],"اربط الكاحل وادفع الساق للخلف بامتداد الورك دون تقويس أسفل الظهر.",null,"alt","Cable Pull-Through"),
-E("سمانة على جهاز الأرجل","Leg Press Calf Raise",4,"15-20",60,["calves"],[],"الركبتان مفرودتان دون قفل. ارتفع على مشطي القدمين وانزل لأقصى مدى.",null,"alt","Seated Calf Raise"),
-E("كرنش بجهاز البطن","Ab Crunch Machine",3,"12-15",60,["abs"],[],"اثنِ الجذع بتقريب الأضلاع من الحوض وعد ببطء دون ارتداد.",null,"alt","Cable Crunch")
-]},
-{d:"الثلاثاء",k:"علوي 2",en:"Upper 2",ex:[
-E("ضغط علوي بجهاز سميث","Smith Machine Incline Press",4,"8-10",90,["chest"],["frontdelt","triceps"],"مقعد بزاوية خفيفة. انزل البار إلى أعلى الصدر وادفع مع إبقاء الكتفين للخلف.",null,"alt","Incline Machine Press"),
-E("سحب أفقي بقبضة عريضة","Wide-Grip Seated Cable Row",4,"10-12",60,["midback","lats"],["biceps","reardelt","erectors"],"اسحب المقبض العريض نحو أسفل الصدر مع ضم لوحي الكتف والجذع ثابت.",null,"alt","T-Bar Row"),
-E("سحب علوي بمقبض محايد","Neutral-Grip Pulldown",4,"8-10",90,["lats"],["biceps","midback"],"مقبض V. اسحب المرفقين نحو الجانبين وانزل ببطء لأقصى مدى.",null,"alt","Reverse-Grip Lat Pulldown"),
-E("تقاطع الكيبل من الأعلى للأسفل","High-to-Low Cable Crossover",3,"12-15",60,["chest"],["frontdelt"],"ميل خفيف للأمام. اضمم اليدين أمام أسفل الصدر بمرفقين ثابتين.",null,"alt","Pec Deck Fly"),
-E("فيس بول بالحبل","Rope Face Pull",3,"12-15",60,["reardelt"],["midback"],"اسحب الحبل نحو الوجه مع فتح اليدين للخارج والمرفقان مرتفعان.",null,"alt","Reverse Pec Deck"),
-E("رفرفة جانبية بالكيبل من الخلف","Behind-the-Back Cable Lateral Raise",3,"12-15 لكل جهة",60,["sidedelt"],[],"الكيبل خلف الجسم. ارفع الذراع جانباً حتى مستوى الكتف دون تأرجح.",null,"alt","DB Lateral Raise"),
-E("جهاز الترايسبس (ديبس)","Triceps Dip Machine",3,"12-15",60,["triceps"],["chest"],"الجذع مستقيم والمرفقان قريبان من الجسم. ادفع حتى الفرد دون رفع الكتفين.",null,"alt","Overhead Cable Tricep Extension"),
-E("كيرل بايزيان بالكيبل","Single-Arm Cable Curl (Bayesian)",3,"12-15 لكل جهة",60,["biceps"],[],"قف بعيداً عن الكيبل لتبقى الذراع خلف الجسم، ثم اثنِ دون تحريك العضد.",null,"alt","Cable Hammer Curl Rope")
-]},
-{d:"الأربعاء",k:"سفلي 2",en:"Lower 2",ex:[
-E("ديدلفت روماني بجهاز سميث","Smith Machine Romanian Deadlift",4,"10-12",90,["hams","glutes"],["erectors"],"ركبتان مثنيتان قليلاً والبار قريب من الساقين. ادفع الورك للخلف والظهر محايد.",null,"alt","Romanian Deadlift"),
-E("هيب ثراست بجهاز سميث","Smith Machine Hip Thrust",4,"10-12",90,["glutes"],["hams"],"الكتفان على مقعد. اضغط الأرداف في القمة دون تقويس أسفل الظهر.",null,"alt","Hip Thrust Machine"),
-E("بيلت سكوات","Belt Squat Machine",4,"10-12",90,["quads"],["glutes"],"الحمل على الورك. انزل بتحكم إلى عمق مريح وادفع بكامل القدم.",null,"alt","Pendulum Squat"),
-E("ثني الركبة جالساً لساق واحدة","Single-Leg Seated Leg Curl",4,"10-12 لكل جهة",90,["hams"],["calves"],"اثنِ ساقاً واحدة بتحكم وبدّل الجهة، والورك ملتصق بالمقعد.",null,"alt","Seated Leg Curl"),
-E("سمانة دونكي","Donkey Calf Raise Machine",4,"15-20",60,["calves"],[],"مدّد الكاحل كاملاً في الأسفل، ثم ارتفع على مشطي القدمين وتوقف في القمة.",null,"alt","Standing Calf Raise"),
-E("إبعاد الورك بالكيبل","Standing Cable Hip Abduction",3,"15-20 لكل جهة",60,["abductors"],["glutes"],"ثبّت نفسك بيد وحرّك الساق للجانب ببطء دون ميل الجذع.",null,"alt","Hip Abductor Machine"),
-E("تقريب الورك بالكيبل","Standing Cable Hip Adduction",3,"12-15 لكل جهة",60,["adductors"],[],"حرّك الساق نحو الجسم وأمامه دون ميل الجذع.",null,"alt","Hip Adduction Machine"),
-E("وود تشوب بالكيبل","Cable Woodchop",3,"10-12 لكل جهة",60,["abs"],[],"دوّر الجذع من الأعلى للأسفل مع ثبات الورك، وتحكم في العودة.",null,"alt","Pallof Press")
-]}
-];
-var FRONT=[
-["chest",'<ellipse cx="51" cy="58" rx="9" ry="11"/><ellipse cx="69" cy="58" rx="9" ry="11"/>'],
-["frontdelt",'<ellipse cx="36" cy="50" rx="6" ry="8"/><ellipse cx="84" cy="50" rx="6" ry="8"/>'],
-["sidedelt",'<ellipse cx="25" cy="52" rx="6" ry="8"/><ellipse cx="95" cy="52" rx="6" ry="8"/>'],
-["biceps",'<ellipse cx="24" cy="80" rx="6" ry="14"/><ellipse cx="96" cy="80" rx="6" ry="14"/>'],
-["abs",'<rect x="52" y="76" width="16" height="38" rx="5"/>'],
-["quads",'<ellipse cx="50" cy="158" rx="8" ry="32"/><ellipse cx="70" cy="158" rx="8" ry="32"/>'],
-["adductors",'<ellipse cx="57" cy="150" rx="3" ry="20"/><ellipse cx="63" cy="150" rx="3" ry="20"/>'],
-["calves",'<ellipse cx="50" cy="215" rx="6" ry="18"/><ellipse cx="70" cy="215" rx="6" ry="18"/>']
-];
-var BACK=[
-["lats",'<ellipse cx="43" cy="90" rx="6" ry="16"/><ellipse cx="77" cy="90" rx="6" ry="16"/>'],
-["midback",'<polygon points="60,40 74,50 70,86 60,96 50,86 46,50"/>'],
-["reardelt",'<ellipse cx="34" cy="50" rx="6" ry="8"/><ellipse cx="86" cy="50" rx="6" ry="8"/>'],
-["triceps",'<ellipse cx="24" cy="80" rx="6" ry="14"/><ellipse cx="96" cy="80" rx="6" ry="14"/>'],
-["erectors",'<rect x="54" y="98" width="12" height="24" rx="5"/>'],
-["glutes",'<ellipse cx="50" cy="134" rx="9" ry="11"/><ellipse cx="70" cy="134" rx="9" ry="11"/>'],
-["abductors",'<ellipse cx="38" cy="130" rx="4" ry="7"/><ellipse cx="82" cy="130" rx="4" ry="7"/>'],
-["hams",'<ellipse cx="50" cy="172" rx="8" ry="26"/><ellipse cx="70" cy="172" rx="8" ry="26"/>'],
-["calves",'<ellipse cx="50" cy="215" rx="6" ry="18"/><ellipse cx="70" cy="215" rx="6" ry="18"/>']
-];
-var SIL='<circle class="b" cx="60" cy="18" r="11"/><rect class="b" x="55" y="27" width="10" height="9"/><rect class="b" x="36" y="34" width="48" height="88" rx="14"/><rect class="b" x="16" y="42" width="16" height="80" rx="8"/><rect class="b" x="88" y="42" width="16" height="80" rx="8"/><rect class="b" x="41" y="118" width="18" height="124" rx="9"/><rect class="b" x="61" y="118" width="18" height="124" rx="9"/>';
-function fig(list,p,s,label){
-  var g=list.map(function(m){var c=p.indexOf(m[0])>-1?"p":(s.indexOf(m[0])>-1?"s":"");return '<g class="r '+c+'">'+m[1]+'</g>';}).join("");
-  return '<figure><svg viewBox="0 0 120 244" role="img" aria-label="'+label+'">'+SIL+g+'</svg>'+label+'</figure>';
-}
-function minutes(day){var t=0;day.ex.forEach(function(e){t+=e.sets*(40+e.rest)+60;});return Math.round(t/60/5)*5;}
-function sets(day){return day.ex.reduce(function(a,e){return a+e.sets;},0);}
-function vidLink(e){
-  if(e.vid)return '<a class="vid" href="'+e.vid+'" target="_blank" rel="noopener">شاهد الفيديو</a>';
-  return '<a class="vid" href="https://www.youtube.com/results?search_query='+encodeURIComponent(e.en+" form")+'" target="_blank" rel="noopener">ابحث عن فيديو للتمرين</a>';
-}
-function chips(ids,cls){return ids.map(function(i){return '<span class="chip '+cls+'">'+MUS[i]+'</span>';}).join("");}
-function card(e,i,open){
-  var tag=e.tag==="alt"?'<span class="tag alt">بديل</span>':"";
-  var rest=e.rest+" ثانية راحة";
-  return '<details class="ex"'+(open?" open":"")+'><summary><span class="n">'+(i+1)+'</span><span class="nm"><b>'+e.ar+tag+'</b><small>'+e.en+'</small></span><span class="sr">'+e.sets+" × "+e.reps+'</span></summary>'
-   +'<div class="body"><div class="figs">'+fig(FRONT,e.p,e.s,"أمامي")+fig(BACK,e.p,e.s,"خلفي")
-   +'<div class="info"><div class="chips">'+chips(e.p,"p")+chips(e.s,"s")+'</div><p class="cue">'+e.cue+'</p><div class="meta">'+rest+(e.note?" · بديل "+e.note:"")+'</div>'+vidLink(e)+'</div></div>'
-   +'<div class="legend"><span><i style="background:var(--hot)"></i>رئيسية</span><span><i style="background:var(--warm)"></i>مساعدة</span></div></div></details>';
-}
-var cur=0,st={d:0};
-try{var sv=parseInt(localStorage.getItem("tm2-day"),10);if(sv>=0&&sv<4)cur=sv;}catch(x){}
-function renderDays(){
-  var el=document.getElementById("days");
-  el.innerHTML=DAYS.map(function(d,i){return '<button class="day" role="tab" aria-selected="'+(i===cur)+'" data-i="'+i+'"><b>'+d.d+'</b><span>'+d.k+'</span></button>';}).join("");
-}
-function renderDay(){
-  var d=DAYS[cur];
-  document.getElementById("day").innerHTML='<div class="head"><h2>'+d.k+' <span style="color:var(--muted);font-size:15px;font-family:var(--f-body)" dir="ltr">'+d.en+'</span></h2><div class="stats"><span><b>'+d.ex.length+'</b> تمارين</span><span><b>'+sets(d)+'</b> مجموعة</span><span>≈ <b>'+minutes(d)+'</b> دقيقة</span></div></div><div class="list">'+d.ex.map(function(e,i){return card(e,i,i===0);}).join("")+'</div>';
-}
-function renderVol(){
-  var rows=GROUPS.map(function(g){
-    var total=0,days=0;
-    DAYS.forEach(function(d){var s=0;d.ex.forEach(function(e){if(e.p.some(function(m){return g[1].indexOf(m)>-1;}))s+=e.sets;});if(s>0)days++;total+=s;});
-    return{n:g[0],t:total,d:days};
-  });
-  var max=Math.max.apply(null,rows.map(function(r){return r.t;}));
-  var total=DAYS.reduce(function(a,d){return a+sets(d);},0);
-  document.getElementById("v-vol").innerHTML='<div class="panel"><h3 style="margin-bottom:12px;font-size:18px">المجموعات المباشرة في الأسبوع</h3><div class="bars">'
-   +rows.map(function(r){return '<div class="bar"><span>'+r.n+'</span><span class="t"><i style="width:'+Math.round(r.t/max*100)+'%"></i></span><span class="v">'+r.t+' <small>/ '+r.d+(r.d===1?' يوم':' يومان')+'</small></span></div>';}).join("")
-   +'</div><p class="note">الرقم الأول عدد المجموعات التي تكون فيها العضلة هي الرئيسية، والثاني عدد الأيام التي تُدرَّب فيها مباشرة. العضلات المساعدة غير محسوبة. إجمالي مجموعات الأسبوع: '+total+'.</p></div>'
-   +'<div class="panel" style="margin-top:12px"><h3 style="margin-bottom:6px;font-size:18px">الكارديو</h3><p class="cue" style="margin:0">أبقِ الكارديو العالي الشدة في الأيام الخالية من المقاومة (الاثنين والخميس والجمعة). اجعل الصباح الرابع خفيفاً وفي يوم علوي، بعيداً عن أيام الأرجل.</p></div>';
-}
-function renderChg(){
-  var h='<div class="panel"><h3 style="margin-bottom:6px;font-size:18px">كل التمارين استُبدلت</h3><p class="note" style="margin:0 0 10px">كل تمرين حلّ محل تمرين من الإصدار السابق في الموضع نفسه، وبالعضلة الرئيسية نفسها والمجموعات والتكرارات وفترات الراحة نفسها. لذلك لم يتغير التوزيع الأسبوعي.</p></div>';
-  DAYS.forEach(function(d){
-    h+='<div class="panel" style="margin-top:12px"><h3 style="margin-bottom:8px;font-size:17px">'+d.d+' · '+d.k+'</h3><div class="tbl"><table><thead><tr><th>كان</th><th>أصبح</th></tr></thead><tbody>'
-      +d.ex.map(function(e){return '<tr><td><small>'+e.note+'</small></td><td>'+e.ar+'<small>'+e.en+'</small></td></tr>';}).join("")+'</tbody></table></div></div>';
-  });
-  document.getElementById("v-chg").innerHTML=h;
-}
-function show(v){
-  ["days","vol","chg"].forEach(function(k){
-    document.getElementById("v-"+k).hidden=(k!==v);
-    document.getElementById("t-"+k).setAttribute("aria-selected",k===v);
-  });
-}
-document.getElementById("sub").textContent="4 أيام مقاومة · "+DAYS.reduce(function(a,d){return a+d.ex.length;},0)+" تمريناً بالأجهزة والكيبل";
-document.querySelector(".seg").addEventListener("click",function(e){var b=e.target.closest("button");if(b)show(b.getAttribute("data-v"));});
-document.getElementById("days").addEventListener("click",function(e){
-  var b=e.target.closest("button");if(!b)return;
-  cur=parseInt(b.getAttribute("data-i"),10);
-  try{localStorage.setItem("tm2-day",String(cur));}catch(x){}
-  renderDays();renderDay();
-});
-renderDays();renderDay();renderVol();renderChg();
-})();
-</script>
+const PROGRAM=[{"day": 1, "ar": "الجزء السفلي 1", "ex": [{"n": "Back Squat", "wu": 3, "sets": 4, "reps": "4", "pct": 0.75, "rest": "3-4 min", "rpe": null, "note": "Sit back and down, 15° toe flare, drive your knees out laterally", "vids": [["فيديو", "https://www.youtube.com/shorts/PPmvh7gBTi0"]], "ar": "سكوات بالبار", "pri": ["الفخذ الأمامي (Quads)", "الألوية (Glutes)"], "sec": ["الفخذ الخلفي (Hamstrings)", "المقرّبات (Adductors)", "أسفل الظهر (Erectors)", "عضلات الجذع (Core)"], "info": "البار على أعلى ظهرك. انزل بالورك والركبتين معًا حتى يتوازى الفخذان مع الأرض أو أعمق، ثم ادفع الأرض للأعلى.", "mot": "ادفع الأرض بعيدًا عنك.", "lift": "squat"}, {"n": "Eccentric-Accentuated Stiff-Leg Deadlift", "wu": 2, "sets": 3, "reps": "10", "pct": null, "rest": "2-3 min", "rpe": "7", "note": "4-second lowering phase. Keep your hips high", "vids": [["فيديو", "https://www.youtube.com/shorts/q3mVYFBaLq4"]], "ar": "ديدلفت بساقين شبه مفرودتين", "pri": ["الفخذ الخلفي (Hamstrings)", "الألوية (Glutes)"], "sec": ["أسفل الظهر (Erectors)", "المقرّبات (Adductors)", "الساعدان (Forearms)"], "info": "ادفع الورك للخلف وانزل بالبار قريبًا من ساقيك لمدة 4 ثوانٍ، مع إبقاء الورك مرتفعًا والظهر محايدًا، ثم قف.", "mot": "البطء في النزول هو سر النمو.", "lift": null}, {"n": "Dumbbell Walking Lunge", "wu": 0, "sets": 3, "reps": "15", "pct": null, "rest": "2-3 min", "rpe": "8", "note": "15 steps per leg", "vids": [["فيديو", "https://www.youtube.com/shorts/jJeOLNiAIiY"]], "ar": "اندفاع بالدمبل مع المشي", "pri": ["الفخذ الأمامي (Quads)", "الألوية (Glutes)"], "sec": ["الفخذ الخلفي (Hamstrings)", "المقرّبات (Adductors)", "السمانة (Gastrocnemius)", "عضلات الجذع (Core)"], "info": "دمبل في كل يد. خطوة طويلة، ثم انزل بالركبة الخلفية قرب الأرض وقف على الرجل الأمامية. 15 خطوة لكل رجل.", "mot": "خطوة بعد خطوة، تصل.", "lift": null, "rs": "15 خطوة لكل رجل", "rx": "15 خطوة لكل رجل"}, {"n": "A1: Seated Leg Curl", "wu": 0, "sets": 3, "reps": "15", "pct": null, "rest": "0 min", "rpe": "9", "note": "Focus on squeezing your hamstrings", "vids": [["فيديو", "https://www.youtube.com/shorts/xdbEG3xGLI8"]], "ar": "ثني الركبتين جالسًا", "pri": ["الفخذ الخلفي (Hamstrings)"], "sec": ["السمانة (Gastrocnemius)"], "info": "اجلس وثبّت وركيك على المقعد، اثنِ الركبتين وأنت تعصر الفخذ الخلفي، ثم عد ببطء. يُؤدَّى مع التمرين التالي بدون راحة بينهما.", "mot": "اعصر.. واثبت ثانية.", "lift": null}, {"n": "A2: Glutes kick back", "wu": 0, "sets": 3, "reps": "15", "pct": null, "rest": "1-2 min", "rpe": "9", "note": "Focus on squeezing your glutes", "vids": [["فيديو", "https://www.youtube.com/watch?v=JgKR3eit9SA"]], "ar": "ركلة الألوية للخلف", "pri": ["الألوية (Glutes)"], "sec": ["الفخذ الخلفي (Hamstrings)", "عضلات الجذع (Core)"], "info": "اركل للخلف بحركة محكومة دون تقويس أسفل الظهر، واعصر الألوية في نهاية الحركة.", "mot": "كل ركلة تنحت الشكل.", "lift": null}, {"n": "Eccentric-Accentuated / Constant-Tension Standing Calf Raise", "wu": 0, "sets": 4, "reps": "6/6", "pct": null, "rest": "1-2 min", "rpe": "8", "note": "First 6 reps 3-second lowering phase, last 6 reps don't stop between reps", "vids": [["فيديو", "https://www.youtube.com/watch?v=-10t0nmtNFk"]], "ar": "رفع السمانة واقفًا", "pri": ["السمانة (Gastrocnemius)"], "sec": ["النعلية (Soleus)"], "info": "ارتفع على أطراف الأصابع بأقصى مدى. أول 6 تكرارات بنزول 3 ثوانٍ، وآخر 6 بلا توقف بين التكرارات.", "mot": "السمانة تكافئ الصبور.", "lift": null, "rs": "6 + 6 تكرارات", "rx": "6 بنزول بطيء 3 ثوانٍ، ثم 6 متواصلة بلا توقف"}, {"n": "Cable Crunch", "wu": 0, "sets": 4, "reps": "30", "pct": null, "rest": "1-2 min", "rpe": "8", "note": "Round your back as you crunch", "vids": [["فيديو", "https://www.youtube.com/shorts/9ff9RHItABI"]], "ar": "كرنش بالكيبل", "pri": ["عضلات البطن (Rectus Abdominis)"], "sec": ["المائلة (Obliques)"], "info": "اركع وثبّت الحبل خلف رأسك، دوّر ظهرك وقرّب الأضلاع من الحوض دون الجذب بذراعيك.", "mot": "جذع قوي، رفعات أقوى.", "lift": null}]}, {"day": 2, "ar": "الجزء العلوي 1", "ex": [{"n": "Barbell Bench Press", "wu": 3, "sets": 4, "reps": "6", "pct": 0.7, "rest": "2-3 min", "rpe": null, "note": "Elbows at a 45° angle. Squeeze your shoulder blades and stay firm on the bench", "vids": [["فيديو", "https://www.youtube.com/shorts/hWbUlkb5Ms4"]], "ar": "ضغط الصدر بالبار", "pri": ["الصدر (Chest)"], "sec": ["الكتف الأمامي (Front Delts)", "الترايسبس (Triceps)"], "info": "المرفقان بزاوية 45° عن الجسم. اجمع لوحي الكتف وثبّت جسمك على المقعد، انزل للصدر ثم ادفع.", "mot": "أنت أقوى مما تظن.", "lift": "bench"}, {"n": "Lat Pulldown", "wu": 2, "sets": 3, "reps": "10", "pct": null, "rest": "2-3 min", "rpe": "8", "note": "Pull your elbows down and in", "vids": [["فيديو", "https://www.youtube.com/shorts/hnSqbBk15tw"]], "ar": "سحب الظهر للأسفل", "pri": ["الظهر العريض (Lats)"], "sec": ["البايسبس (Biceps)", "الكتف الخلفي (Rear Delts)", "منتصف الظهر (Rhomboids)"], "info": "اسحب المرفقين لأسفل وللداخل مع صدر مرتفع، ولا تتأرجح بجسمك.", "mot": "ظهر عريض يبدأ بمرفق ذكي.", "lift": null}, {"n": "Barbell Overhead Press", "wu": 2, "sets": 3, "reps": "10", "pct": null, "rest": "2-3 min", "rpe": "7", "note": "Squeeze your glutes to keep your torso upright", "vids": [["فيديو", "https://www.youtube.com/shorts/zoN5EH50Dro"]], "ar": "ضغط الكتف بالبار", "pri": ["الكتف (Shoulders)"], "sec": ["الترايسبس (Triceps)", "أعلى الصدر (Upper Chest)", "الترابيس (Traps)", "عضلات الجذع (Core)"], "info": "اعصر الألوية وثبّت الجذع، وادفع البار فوق رأسك بخط مستقيم.", "mot": "ارفع السقف.", "lift": null}, {"n": "Chest-Supported T-Bar Row", "wu": 1, "sets": 3, "reps": "12", "pct": null, "rest": "2-3 min", "rpe": "8", "note": "Squeeze shoulder blades together at the top, control the weight", "vids": [["فيديو", "https://www.youtube.com/shorts/fgSyNdEsqlM"]], "ar": "تجديف تي-بار بدعم الصدر", "pri": ["منتصف الظهر (Rhomboids & Mid Traps)", "الظهر العريض (Lats)"], "sec": ["الكتف الخلفي (Rear Delts)", "البايسبس (Biceps)"], "info": "الصدر على الدعامة. اجمع لوحي الكتف في الأعلى وتحكّم بالوزن عند النزول.", "mot": "اسحب بمرفقيك لا بيديك.", "lift": null}, {"n": "Pause Dumbbell Incline Press", "wu": 1, "sets": 3, "reps": "8", "pct": null, "rest": "2-3 min", "rpe": "7", "note": "3-second pause", "vids": [["فيديو", "https://www.youtube.com/watch?v=p2t9daxLpB8"]], "ar": "ضغط دمبل مائل مع توقف", "pri": ["أعلى الصدر (Upper Chest)"], "sec": ["الكتف الأمامي (Front Delts)", "الترايسبس (Triceps)"], "info": "مقعد مائل. انزل بالدمبل وتوقف 3 ثوانٍ في الأسفل دون ارتخاء، ثم ادفع.", "mot": "التوقف يكشف القوة الحقيقية.", "lift": null}, {"n": "Myo Reps Floor Skull Crusher", "wu": 1, "sets": 3, "reps": "12", "pct": null, "rest": "1-2 min", "rpe": "9", "note": "8 reps, rest 5 seconds, 2 reps, rest 5 seconds, 2 reps", "vids": [["فيديو", "https://www.youtube.com/shorts/a214RQso4Sc"]], "ar": "سكل كراشر على الأرض (مايو ريبس)", "pri": ["الترايسبس (Triceps)"], "sec": ["الساعدان (Forearms)", "الكتف الأمامي (Front Delts)"], "info": "مايو ريبس: 8 تكرارات، راحة 5 ثوانٍ، 2 تكرار، راحة 5 ثوانٍ، 2 تكرار. المرفقان ثابتان.", "mot": "ذراع قوي من آخر تكرارين.", "lift": null, "rs": "12 (8 + 2 + 2)", "rx": "8 تكرارات، راحة 5 ثوانٍ، ثم 2، راحة 5 ثوانٍ، ثم 2"}, {"n": "Forearms – Weak Point 1", "wu": 0, "sets": 3, "reps": "15-20", "pct": null, "rest": "1-2 min", "rpe": "9", "note": "Focus on mind-muscle connection", "vids": [["فيديو", "https://www.youtube.com/shorts/vm0zV_WQerE"]], "ar": "الساعدان (نقطة الضعف)", "pri": ["الساعدان (Forearms)"], "sec": ["العضدية الكعبرية (Brachioradialis)"], "info": "ركّز على الإحساس بالعضلة (Mind-Muscle Connection) وكرر 15 إلى 20 تكرارًا بتحكم.", "mot": "قبضة أقوى، كل التمارين أسهل.", "lift": null}]}, {"day": 3, "ar": "الجزء السفلي 2", "ex": [{"n": "Deadlift", "wu": 3, "sets": 2, "reps": "5", "pct": 0.8, "rest": "3-5 min", "rpe": null, "note": "Brace your lats, chest tall, hips high, pull the slack out of the bar prior to moving it off the ground", "vids": [["فيديو", "https://www.youtube.com/shorts/ZaTM37cfiDs"]], "ar": "ديدلفت", "pri": ["الألوية (Glutes)", "الفخذ الخلفي (Hamstrings)", "أسفل الظهر (Erectors)"], "sec": ["الفخذ الأمامي (Quads)", "الظهر العريض (Lats)", "الترابيس (Traps)", "الساعدان (Forearms)"], "info": "شدّ الظهر العريض، الصدر مرتفع والورك عالٍ، وخذ الارتخاء من البار قبل أن ترفعه عن الأرض.", "mot": "ثبّت.. ثم اسحب.", "lift": "deadlift"}, {"n": "Back Squat", "wu": 3, "sets": 3, "reps": "8", "pct": 0.7, "rest": "3-4 min", "rpe": null, "note": "Sit back and down, 15° toe flare, drive your knees out laterally", "vids": [["فيديو", "https://www.youtube.com/shorts/PPmvh7gBTi0"]], "ar": "سكوات بالبار", "pri": ["الفخذ الأمامي (Quads)", "الألوية (Glutes)"], "sec": ["الفخذ الخلفي (Hamstrings)", "المقرّبات (Adductors)", "أسفل الظهر (Erectors)", "عضلات الجذع (Core)"], "info": "البار على أعلى ظهرك. انزل بالورك والركبتين معًا حتى يتوازى الفخذان مع الأرض أو أعمق، ثم ادفع الأرض للأعلى.", "mot": "ادفع الأرض بعيدًا عنك.", "lift": "squat"}, {"n": "Barbell Hip Thrust", "wu": 2, "sets": 4, "reps": "12", "pct": null, "rest": "2-3 min", "rpe": "8", "note": "Squeeze your glutes at the top", "vids": [["فيديو", "https://www.youtube.com/shorts/sxOrVuCvWq4"]], "ar": "دفع الورك بالبار", "pri": ["الألوية (Glutes)"], "sec": ["الفخذ الخلفي (Hamstrings)", "الفخذ الأمامي (Quads)", "المقرّبات (Adductors)"], "info": "الظهر العلوي على المقعد. ادفع الورك للأعلى واعصر الألوية في القمة.", "mot": "ألوية قوية، رفعات أعلى.", "lift": null}, {"n": "Unilateral Eccentric-Overloaded Leg Extension", "wu": 0, "sets": 3, "reps": "12", "pct": null, "rest": "1-2 min", "rpe": "8", "note": "12 reps each leg, bilateral concentric, unilateral eccentric", "vids": [["فيديو", "https://www.youtube.com/watch?v=h6X9Iszn-UE"]], "ar": "مد الركبة بساق واحدة مع نزول مضاعف", "pri": ["الفخذ الأمامي (Quads)"], "sec": [], "info": "12 تكرارًا لكل رجل: ارفع بالرجلين معًا ثم انزل ببطء بساق واحدة. تمرين عزل للفخذ الأمامي.", "mot": "نزلة بطيئة، نتيجة كبيرة.", "lift": null, "rs": "12 لكل رجل", "rx": "12 تكرارة لكل رجل"}, {"n": "Constant-Tension Lying Leg Curl", "wu": 0, "sets": 3, "reps": "20", "pct": null, "rest": "1-2 min", "rpe": "8", "note": "Flex your hamstrings", "vids": [["فيديو", "https://www.youtube.com/watch?v=SbSNUXPRkc8"]], "ar": "ثني الركبتين نائمًا بشد مستمر", "pri": ["الفخذ الخلفي (Hamstrings)"], "sec": ["السمانة (Gastrocnemius)"], "info": "حافظ على الشد طوال التكرارات ولا تُرخِ العضلة في الأعلى أو الأسفل.", "mot": "الشد المستمر يبني العضلة.", "lift": null}, {"n": "Hanging Leg Raise – Lower Body Weak Point 1", "wu": 0, "sets": 3, "reps": "15-20", "pct": null, "rest": "1-2 min", "rpe": "9", "note": "Focus on mind-muscle connection", "vids": [["فيديو", "https://www.youtube.com/shorts/cFdDKSzkLnc"]], "ar": "رفع الساقين من التعليق", "pri": ["أسفل البطن (Lower Abs)", "عضلات الورك الأمامية (Hip Flexors)"], "sec": ["المائلة (Obliques)", "الساعدان (Forearms)"], "info": "تدلَّ من العقلة وارفع ساقيك مع تقوير الحوض للأعلى، وانزل بتحكم دون تأرجح.", "mot": "بطن قوي بالتحكم لا بالتأرجح.", "lift": null}]}, {"day": 4, "ar": "الجزء العلوي 2", "ex": [{"n": "Wide-Grip Pull-Up", "wu": 1, "sets": 3, "reps": "6", "pct": null, "rest": "2-3 min", "rpe": "7", "note": "Pull your chest to the bar", "vids": [["فيديو", "https://www.youtube.com/shorts/3XFAl5j5gIw"]], "ar": "عقلة بقبضة واسعة", "pri": ["الظهر العريض (Lats)"], "sec": ["البايسبس (Biceps)", "الكتف الخلفي (Rear Delts)", "منتصف الظهر (Rhomboids & Mid Traps)", "الساعدان (Forearms)"], "info": "اسحب صدرك نحو العقلة والمرفقان للأسفل، وانزل حتى تمديد كامل.", "mot": "اسحب نفسك للأعلى.", "lift": null}, {"n": "Barbell Incline Press", "wu": 2, "sets": 4, "reps": "8", "pct": null, "rest": "2-3 min", "rpe": "7-8", "note": "Keep your elbows out", "vids": [["فيديو", "https://www.youtube.com/shorts/s73xzQo948c"]], "ar": "ضغط بار مائل", "pri": ["أعلى الصدر (Upper Chest)"], "sec": ["الكتف الأمامي (Front Delts)", "الترايسبس (Triceps)"], "info": "مقعد مائل والمرفقان للخارج قليلًا. انزل البار لأعلى الصدر ثم ادفع.", "mot": "صدر علوي ممتلئ يبدأ هنا.", "lift": null}, {"n": "Pendlay Row / Barbell Bent Over Row", "wu": 1, "sets": 3, "reps": "10", "pct": null, "rest": "2-3 min", "rpe": "8", "note": "10 reps Pendlay row, 10 reps bent over row", "vids": [["Pendlay", "https://www.youtube.com/shorts/emXjcgAxgdY"], ["Bent Over Row", "https://www.youtube.com/watch?v=TJiouaKew_k"]], "ar": "تجديف بندلاي / تجديف بار منحنٍ", "pri": ["الظهر العريض (Lats)", "منتصف الظهر (Rhomboids & Mid Traps)"], "sec": ["الكتف الخلفي (Rear Delts)", "البايسبس (Biceps)", "أسفل الظهر (Erectors)", "الساعدان (Forearms)"], "info": "10 تكرارات بندلاي (يبدأ البار من الأرض في كل مرة)، ثم 10 تكرارات تجديف منحنٍ دون ملامسة الأرض.", "mot": "ظهر قوي، قوام أقوى.", "lift": null, "rs": "10 + 10 تكرارات", "rx": "10 بندلاي، ثم 10 تجديف منحنٍ"}, {"n": "A1: Cable Flye 21s", "wu": 0, "sets": 3, "reps": "7/7/7", "pct": null, "rest": "0 min", "rpe": "8", "note": "7 reps top half of ROM, 7 reps bottom half ROM, 7 reps full ROM", "vids": [["فيديو موشن شرح", "https://claude.ai/artifact/Rztz3vK7Sjr6wHS2XMhZSP"]], "ar": "تفتيح كيبل 21", "pri": ["الصدر (Chest)"], "sec": ["الكتف الأمامي (Front Delts)", "البايسبس (Biceps)"], "info": "7 تكرارات في النصف العلوي، ثم 7 في النصف السفلي، ثم 7 بمدى كامل، كلها متواصلة. شاهد الفيديو الموشن.", "mot": "احرق الصدر بإحساس.", "lift": null, "rs": "7 + 7 + 7 تكرارات", "rx": "7 في النصف العلوي، ثم 7 في النصف السفلي، ثم 7 بمدى كامل"}, {"n": "A2: Face Pull", "wu": 0, "sets": 3, "reps": "15", "pct": null, "rest": "1-2 min", "rpe": "8", "note": "Focus on squeezing your shoulder blades together", "vids": [["فيديو", "https://www.youtube.com/shorts/RYHUTv7nnrg"]], "ar": "سحب الوجه", "pri": ["الكتف الخلفي (Rear Delts)"], "sec": ["منتصف الترابيس (Mid Traps)", "عضلات الكفة (Rotator Cuff)"], "info": "اسحب الحبل نحو وجهك وافتح المرفقين، واجمع لوحي الكتف.", "mot": "كتف صحي، تمرين طويل العمر.", "lift": null}, {"n": "Machine Lateral Raise", "wu": 1, "sets": 3, "reps": "12/12", "pct": null, "rest": "1-2 min", "rpe": "9", "note": "Dropset", "vids": [["فيديو", "https://www.youtube.com/shorts/ODV5FncMCy0"]], "ar": "رفع جانبي بالجهاز", "pri": ["الكتف الجانبي (Side Delts)"], "sec": ["الترابيس العلوي (Upper Traps)"], "info": "ارفع المرفقين للجانب حتى مستوى الكتف. 12 تكرارًا بالوزن الأول، ثم دروب سِت (Dropset): خفّض الوزن فورًا وأكمل 12 أخرى.", "mot": "كتف عريض بصبر وتكرار.", "lift": null, "rs": "12 + 12 تكرارة", "rx": "12 بالوزن الأول، ثم 12 بعد خفض الوزن (دروب سِت)"}, {"n": "Supinated Dumbbell Curl", "wu": 0, "sets": 3, "reps": "15", "pct": null, "rest": "1-2 min", "rpe": "8", "note": "Supinate against the dumbbell", "vids": [["فيديو موشن شرح", "https://claude.ai/artifact/6GXSWvGbzJxTDiTw91MBN7"]], "ar": "كيرل دمبل مع تدوير الكف", "pri": ["البايسبس (Biceps)"], "sec": ["العضدية (Brachialis)", "الساعدان (Forearms)"], "info": "ارفع وأنت تُدوّر الكف للأعلى، والكوع ثابت، واعصر في الأعلى. شاهد الفيديو الموشن.", "mot": "كل لفّة كف تصنع بايسبس.", "lift": null}, {"n": "Forearms – Weak Point 1", "wu": 0, "sets": 3, "reps": "15-20", "pct": null, "rest": "1-2 min", "rpe": "9", "note": "Focus on mind-muscle connection", "vids": [["فيديو", "https://www.youtube.com/shorts/vm0zV_WQerE"]], "ar": "الساعدان (نقطة الضعف)", "pri": ["الساعدان (Forearms)"], "sec": ["العضدية الكعبرية (Brachioradialis)"], "info": "ركّز على الإحساس بالعضلة (Mind-Muscle Connection) وكرر 15 إلى 20 تكرارًا بتحكم.", "mot": "قبضة أقوى، كل التمارين أسهل.", "lift": null}]}];
+const KEY='sajil-tamareeni-v1';
+const WEEKS=9;
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function load(){try{const j=localStorage.getItem(KEY);return j?JSON.parse(j):null}catch(e){return null}}
+let S=Object.assign({rm:{},wpw:3,week:1,day:1,tab:'log',logs:{}},load()||{});
+if(S.tab!=='exp')S.tab='log';
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}},250)}
+const ALL=[];PROGRAM.forEach(d=>d.ex.forEach((x,i)=>{x.id='d'+d.day+'e'+i;x.day=d.day;ALL.push(x)}));
+const byId=id=>ALL.find(x=>x.id===id);
+const wave=w=>Math.ceil(w/S.wpw);
+const wc=w=>(wave(w)-1)%6+1;
+const num=v=>{const n=parseFloat(String(v==null?'':v).replace(',','.'));return isFinite(n)?n:null};
+const getLog=(wk,id)=>S.logs[wk+':'+id];
+const defReps=x=>{const m=String(x.reps).match(/\d+/);return m?m[0]:''};
+function effW(L,s){const v=(s.w!==''&&s.w!=null)?s.w:L.w0;const n=num(v);return n===null?0:n}
+function isDone(s){if(s.d===true)return true;if(s.d===false)return false;return num(s.w)!==null&&num(s.r)!==null}
+function setList(L){const o=[];if(L)L.s.forEach((s,i)=>{const r=num(s.r);if(isDone(s)&&r!==null&&r>0)o.push({i:i,w:effW(L,s),r:r})});return o}
+function stats(L){const a=setList(L);let top=0;a.forEach(v=>{top=Math.max(top,v.w)});return{filled:a.length,top:top}}
+function prevLog(id,week){for(let k=week-1;k>=1;k--){const L=getLog(k,id);if(L&&stats(L).filled)return{week:k,L}}return null}
+function ensureLog(wk,id,n,x){const k=wk+':'+id;let L=S.logs[k];const pv=prevLog(id,wk);
+ if(!L){L=S.logs[k]={s:[],rpe:'',note:'',w0:'',pw:false};if(pv){const a=setList(pv.L);const mx=a.length?Math.max(...a.map(v=>v.w)):0;L.w0=mx>0?String(mx):''}}
+ while(L.s.length<n){const i=L.s.length;const ps=pv&&pv.L.s[i];L.s.push({w:'',r:(ps&&ps.r)||(x?defReps(x):''),d:false})}
+ return L}
+const SETW=n=>n===1?'مجموعة واحدة':n===2?'مجموعتان':n+' مجموعات';
+function repsShort(x){if(x.rs)return x.rs;const r=String(x.reps);if(/^\d+$/.test(r)){const n=+r;return n+(n<=10?' تكرارات':' تكرارة')}const m=r.match(/^(\d+)-(\d+)$/);if(m)return m[1]+' إلى '+m[2]+' تكرارة';return r+' تكرارة'}
+const isFull=x=>stats(getLog(S.week,x.id)).filled>=x.sets;
 
-<script>
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
-</script>
-</body>
-</html>
+/* ---------- rendering ---------- */
+const app=document.getElementById('app');let openId=null,msg='';
+function hasData(){const has=new Set();Object.keys(S.logs).forEach(k=>{if(stats(S.logs[k]).filled)has.add(+k.split(':')[0])});return has}
+function renderHead(){
+ const wl=document.getElementById('wave');wl.textContent='الموجة '+wave(S.week)+' · الأسبوع '+S.week;wl.className='wave wv'+wc(S.week);
+ const has=hasData();let h='';
+ for(let w=1;w<=WEEKS;w++){h+='<button class="wk wv'+wc(w)+(has.has(w)?' has':'')+((w>1&&(w-1)%S.wpw===0)?' wstart':'')+'" data-act="week" data-v="'+w+'" aria-pressed="'+(S.week===w)+'" aria-label="الأسبوع '+w+'">'+w+'</button>'}
+ document.getElementById('weeks').innerHTML=h;
+ document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.tab));
+}
+function render(){renderHead();if(S.tab==='log')renderLog();else renderExp()}
+function renderLog(){
+ const d=PROGRAM.find(p=>p.day===S.day);
+ let h='<div class="days wv'+wc(S.week)+'">'+PROGRAM.map(p=>'<button class="dy" data-act="day" data-v="'+p.day+'" aria-pressed="'+(S.day===p.day)+'"><b>اليوم '+p.day+'</b><small>'+esc(p.ar)+'</small></button>').join('')+'</div>';
+ h+='<div class="bar"><i id="dbar"></i></div><div class="barlbl"><span id="dtxt"></span><span>الأسبوع '+S.week+'</span></div>';
+ d.ex.forEach((x,i)=>{h+=cardHtml(x,i)});
+ app.innerHTML=h;refreshStatus();
+}
+function refreshStatus(){
+ const d=PROGRAM.find(p=>p.day===S.day);let f=0;d.ex.forEach(x=>{if(isFull(x))f++});
+ const b=document.getElementById('dbar'),tx=document.getElementById('dtxt');
+ if(b)b.style.width=(f/d.ex.length*100)+'%';if(tx)tx.textContent='التمارين المنجزة: '+f+' من '+d.ex.length;
+}
+function cardHtml(x,i){
+ const done=isFull(x);const open=openId===x.id;
+ let h='<article class="ex'+(done?' done':'')+'" data-id="'+x.id+'"><div class="hdw'+(open?' open':'')+'"><button class="hd" data-act="toggle" data-v="'+x.id+'" aria-expanded="'+open+'"><span class="num">'+(i+1)+'</span><span class="tt"><span class="en"><bdi dir="ltr">'+esc(x.n)+'</bdi></span><span class="ar">'+esc(x.ar)+'</span>';
+ h+='<span class="pre"><span class="chip b"><bdi>'+esc(SETW(x.sets))+'</bdi></span><span class="chip b"><bdi>'+esc(repsShort(x))+'</bdi></span></span></span></button>';
+ h+='<span class="vls">'+x.vids.map(v=>'<a href="'+esc(v[1])+'" target="_blank" rel="noopener">▶ '+esc(v[0]==='فيديو موشن شرح'?'موشن':v[0]==='Bent Over Row'?'Bent Over':v[0])+'</a>').join('')+'<button class="donebtn" data-act="all" data-v="'+x.id+'" aria-pressed="'+done+'" aria-label="أنجزت كل المجموعات">✓ تم</button></span></div>';
+ if(open)h+=bodyHtml(x);
+ return h+'</article>';
+}
+function bodyHtml(x){
+ const L=ensureLog(S.week,x.id,x.sets,x);
+ let h='<div class="bd"><div class="quote">'+esc(x.mot)+'</div>';
+ if(x.rx)h+='<div class="hint">طريقة التكرارات: <b>'+esc(x.rx)+'</b></div>';
+ h+='<div><div class="lab">الوزن المستخدم (كجم)</div><div class="stepper"><button class="stp" data-act="wt" data-v="'+x.id+'" data-d="-2.5" aria-label="أنقص 2.5 كجم">−</button><input class="f" inputmode="decimal" data-k="w0" data-x="'+x.id+'" value="'+esc(L.w0)+'" placeholder="0" aria-label="الوزن"><button class="stp" data-act="wt" data-v="'+x.id+'" data-d="2.5" aria-label="زد 2.5 كجم">+</button></div></div>';
+ h+='<div><div class="lab">العضلات الأساسية</div><div class="chips">'+x.pri.map(m=>'<span class="chip p"><bdi>'+esc(m)+'</bdi></span>').join('')+'</div>';
+ if(x.sec.length)h+='<div class="lab" style="margin-top:8px">العضلات الفرعية</div><div class="chips">'+x.sec.map(m=>'<span class="chip s"><bdi>'+esc(m)+'</bdi></span>').join('')+'</div>';
+ return h+'</div></div>';
+}
+
+/* ---------- export / settings ---------- */
+function renderExp(){
+ let h='<h2>التصدير إلى Excel</h2><div class="card"><p>ملف Excel فيه ورقة لكل أسبوع وورقة «All Data» بكل التمارين.</p><div class="btns"><button class="btn pri" data-act="xl" data-v="week">تصدير الأسبوع '+S.week+'</button><button class="btn ink" data-act="xl" data-v="all">تصدير كل الأسابيع</button></div></div>';
+ h+='<h2>إعدادات</h2><div class="card"><div class="lab">عدد أسابيع الموجة الواحدة</div><input class="t" inputmode="numeric" data-set="wpw" value="'+S.wpw+'"></div>';
+ h+='<h2>نسخة احتياطية</h2><div class="card"><p>بياناتك محفوظة في هذا المتصفح فقط. احفظ نسخة JSON بين فترة وأخرى، واستوردها في أي جهاز آخر.</p><div class="btns"><button class="btn" data-act="backup">حفظ نسخة JSON</button><label class="btn" for="imp">استيراد نسخة</label><input id="imp" type="file" accept=".json,application/json" hidden></div><div class="msg" id="msg">'+esc(msg)+'</div></div>';
+ h+='<div class="card"><p>مسح كل السجلات يحذف التمارين المنجزة والأوزان من هذا المتصفح.</p><div class="btns"><button class="btn bad" data-act="clear">مسح كل البيانات</button></div></div>';
+ app.innerHTML=h;
+}
+function setMsg(t){msg=t;const m=document.getElementById('msg');if(m)m.textContent=t}
+async function saveFile(name,data,mime){
+ try{if(window.claude&&claude.use){const dl=await claude.use('downloads');if(dl){await dl.save({filename:name,data:data});setMsg('تم الحفظ: '+name);return}}}catch(e){if(e&&e.code==='declined'){setMsg('أُلغي الحفظ.');return}}
+ try{const b=new Blob([data],{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);setMsg('تم تجهيز الملف: '+name)}catch(e){setMsg('تعذّر حفظ الملف في هذا العرض.')}
+}
+function weekSheet(w){
+ const rows=[['Wave','Week','Day','Exercise','Sets','Reps','Done','Weight kg']];
+ ALL.forEach(x=>{const L=getLog(w,x.id);const t=stats(L);const full=t.filled>=x.sets;const wt=L&&num(L.w0)!==null&&num(L.w0)>0?num(L.w0):(t.top||'');
+  rows.push([wave(w),w,x.day,x.n,x.sets,x.reps,full?'Yes':(t.filled?t.filled+'/'+x.sets:'No'),wt])});
+ return rows;
+}
+function buildWorkbook(which){
+ const wb=XLSX.utils.book_new();const has=hasData();
+ const weeks=which==='week'?[S.week]:[...has].sort((a,b)=>a-b);if(!weeks.length)weeks.push(S.week);
+ const all=[['Wave','Week','Day','Exercise','Sets','Reps','Done','Weight kg']];
+ weeks.forEach(w=>{const r=weekSheet(w);const ws=XLSX.utils.aoa_to_sheet(r);ws['!cols']=[7,7,6,46,6,8,8,10].map(n=>({wch:n}));XLSX.utils.book_append_sheet(wb,ws,'Week '+w);r.slice(1).forEach(x=>all.push(x))});
+ const wa=XLSX.utils.aoa_to_sheet(all);wa['!cols']=[7,7,6,46,6,8,8,10].map(n=>({wch:n}));XLSX.utils.book_append_sheet(wb,wa,'All Data');
+ return wb;
+}
+async function exportXl(which){
+ if(typeof XLSX==='undefined'){setMsg('مكتبة Excel لم تُحمَّل. تأكد من الاتصال بالإنترنت ثم أعد فتح الصفحة.');return}
+ const wb=buildWorkbook(which);const buf=XLSX.write(wb,{type:'array',bookType:'xlsx'});
+ await saveFile(which==='week'?'Tamareeni-Week-'+S.week+'.xlsx':'Tamareeni-All-Weeks.xlsx',buf,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+}
+
+/* ---------- events ---------- */
+function keepScroll(fn){const y=window.scrollY;fn();window.scrollTo(0,y)}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v;
+ if(a==='week'){S.week=+v;save();render()}
+ else if(a==='tab'){S.tab=v;save();render();window.scrollTo(0,0)}
+ else if(a==='day'){S.day=+v;openId=null;save();render()}
+ else if(a==='toggle'){openId=openId===v?null:v;renderLog();if(openId){const el=document.querySelector('[data-id="'+openId+'"]');if(el)el.scrollIntoView({block:'start',behavior:'smooth'})}}
+ else if(a==='wt'){const x=byId(v);const L=ensureLog(S.week,v,x.sets,x);L.w0=String(Math.max(0,(num(L.w0)||0)+(+b.dataset.d)));save();keepScroll(renderLog)}
+ else if(a==='all'){const x=byId(v);const L=ensureLog(S.week,v,x.sets,x);const was=L.s.slice(0,x.sets).every(q=>isDone(q));L.s.forEach(s0=>{s0.d=!was;if(!was&&!num(s0.r))s0.r=defReps(x)});save();renderHead();if(!was){openId=null;renderLog()}else keepScroll(renderLog)}
+ else if(a==='xl'){exportXl(v)}
+ else if(a==='backup'){saveFile('Tamareeni-backup.json',JSON.stringify(S),'application/json')}
+ else if(a==='clear'){if(b.dataset.sure){S.logs={};save();msg='تم المسح.';render()}else{b.dataset.sure='1';b.textContent='اضغط مرة أخرى للتأكيد'}}
+});
+document.addEventListener('input',e=>{
+ const t=e.target;
+ if(t.dataset.x&&t.dataset.k==='w0'){const x=byId(t.dataset.x);const L=ensureLog(S.week,x.id,x.sets,x);L.w0=t.value.trim();save()}
+ else if(t.dataset.set==='wpw'){const n=Math.max(1,Math.min(9,parseInt(t.value)||3));S.wpw=n;save();renderHead()}
+});
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.id==='imp'&&t.files[0]){const f=t.files[0];const rd=new FileReader();rd.onload=()=>{try{const j=JSON.parse(rd.result);if(!j||typeof j.logs!=='object')throw 0;S=Object.assign(S,j);S.tab='exp';save();setMsg('تم استيراد النسخة الاحتياطية.');render()}catch(er){setMsg('الملف غير صالح.')}};rd.readAsText(f)}
+});
+render();
+setTimeout(()=>{const c=document.querySelector('.wk[aria-pressed="true"]');if(c&&c.scrollIntoView)c.scrollIntoView({inline:'center',block:'nearest'})},50);
+</script><script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}))</script></body></html>
