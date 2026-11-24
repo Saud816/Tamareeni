@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tamareeni-v3';
+const CACHE_NAME = 'tamareeni-v4';
 const ASSETS = [
   './',
   './index.html',
